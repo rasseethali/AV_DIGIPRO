@@ -108,6 +108,12 @@ console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
 console.log("MAIL_TO:", process.env.MAIL_TO);
     await transporter.sendMail(mailOptions);
+    await transporter.sendMail({
+  from: process.env.EMAIL_USER,
+  to: "developer4@arkcodux.com",
+  subject: "Test Mail",
+  text: "SMTP Working",
+});
 
 
     console.log("✅ Mail Sent Successfully");
