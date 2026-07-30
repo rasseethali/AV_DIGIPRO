@@ -4,22 +4,26 @@ require("dotenv").config();
 // SMTP Transport
 const nodemailer = require("nodemailer");
 
+
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false,
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 10000,
+  socketTimeout: 10000,
 });
 // Verify SMTP Connection
 transporter.verify((error, success) => {
   if (error) {
-    console.error("❌ SMTP Connection Failed");
-    console.error(error);
+    console.log("SMTP ERROR:", error);
   } else {
-    console.log("✅ SMTP Connected Successfully");
+    console.log("SMTP READY");
   }
 });
 
@@ -41,7 +45,7 @@ const sendEnquiry = async (req, res) => {
 
     const mailOptions = {
        from: process.env.EMAIL_USER,     // Your Gmail
-  to: process.env.MAIL_TO,              // Recipient's email address
+       to: process.env.MAIL_TO,              // Recipient's email address
       replyTo: email,
       subject: "📩 New AV DIGIPRO Enquiry",
       html: `
