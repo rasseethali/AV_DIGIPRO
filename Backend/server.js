@@ -11,9 +11,9 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // Local React
-      "https://yourdomain.com", // Hostinger Domain
-      "https://www.yourdomain.com",
+      "http://localhost:5173",
+      "https://avdigi.co.in",
+      "https://www.avdigi.co.in",
     ],
     methods: ["GET", "POST"],
     credentials: true,
