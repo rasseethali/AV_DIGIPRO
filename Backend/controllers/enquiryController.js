@@ -5,7 +5,10 @@ dns.setDefaultResultOrder("ipv4first");
 
 // SMTP Transport
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  family: 4, // Force IPv4
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -100,7 +103,9 @@ const sendEnquiry = async (req, res) => {
       `,
     };
 
-
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+console.log("MAIL_TO:", process.env.MAIL_TO);
     await transporter.sendMail(mailOptions);
 
 

@@ -1,4 +1,11 @@
+
+require("dns").setDefaultResultOrder("ipv4first");
 require("dotenv").config();
+
+
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS:", !!process.env.EMAIL_PASS);
+console.log("MAIL_TO:", process.env.MAIL_TO);
 
 const express = require("express");
 const cors = require("cors");
