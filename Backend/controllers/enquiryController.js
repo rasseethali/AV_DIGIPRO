@@ -5,10 +5,9 @@ dns.setDefaultResultOrder("ipv4first");
 
 // SMTP Transport
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.hostinger.com",
   port: 465,
   secure: true,
-  family: 4, // Force IPv4
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -23,6 +22,8 @@ transporter.verify((error) => {
     console.log("✅ SMTP READY");
   }
 });
+
+
 
 
 // Send Enquiry Controller
