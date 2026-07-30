@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import axios from "axios";
 import EnquiryInput from "./EnquiryInput";
 import EnquiryFormSelect from "./EnquiryFormSelect";
 import SubmitButton from "./SubmitButton";
@@ -40,44 +40,40 @@ const EnquiryForm = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const validationErrors = validateEnquiry(formData);
-
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
-
   try {
     setLoading(true);
 
-   const response = await axios.post(
-  `${import.meta.env.VITE_API_URL}/api/enquiry`,
-  formData,
-  {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-);
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/enquiry`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const data = await response.json();
-
-    if (data.success) {
+    if (response.data.success) {
       setSuccess(true);
     } else {
-      alert(data.message);
+      alert(response.data.message);
     }
-
   } catch (err) {
     console.error(err);
-    alert("Something went wrong!");
+
+    if (err.response) {
+      alert(err.response.data.message);
+    } else {
+      alert(err.message);
+    }
   } finally {
     setLoading(false);
   }
 };
-  if (success) {
-    return <Success />;
-  }
+
+if (success) {
+  return <Success />;
+}
 
   return (
     <div className="rounded-[36px] bg-white  p-8 shadow-[0_20px_60px_rgba(0,0,0,.08)] lg:p-10">
