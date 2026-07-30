@@ -1,0 +1,39 @@
+.g6-tool-banner-component{width:100%}
+.g6-tool-banner-component .g6-tool-banner-container{overflow:hidden;height:610px;width:1220px;border-radius:32px;position:relative;margin:auto;display:flex;align-items:flex-start;justify-content:center}
+.g6-tool-banner-component .g6-tool-banner-container.link-exist{cursor:pointer}
+@media(max-width:1220px){.g6-tool-banner-component .g6-tool-banner-container{width:calc(100vw - 40px);border-radius:24px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container{max-width:400px;height:590px;border-radius:12px}
+}
+.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container{margin-top:60px;position:relative;z-index:1;width:1100px;text-align:center}
+@media(max-width:1220px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container{width:768px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container{margin-top:20px;width:100%}
+}
+.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component{background-color:transparent !important;overflow:hidden}
+@media(min-width:1221px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component{max-height:370px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component{padding:0 20px !important}
+}
+.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-subtitle{max-height:30px;overflow:hidden !important;white-space:nowrap !important;width:100%}
+@media(max-width:1220px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-subtitle{max-height:unset;white-space:normal !important}
+}
+@media(min-width:1221px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-title{max-height:126px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-title{margin-bottom:24px}
+}
+@media(min-width:1221px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-desc{max-height:54px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container .g6-tool-banner-text-container .g6-text-component .g6-text-btn{margin-bottom:24px}
+}
+.g6-tool-banner-component .g6-tool-banner-container img{position:absolute;width:auto;height:100%;top:50%;left:50%;transform:translate(-50%,-50%)}
+@media(max-width:1220px){.g6-tool-banner-component .g6-tool-banner-container img{border-radius:24px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container img{border-radius:12px}
+}
+@media(max-width:767px){.g6-tool-banner-component .g6-tool-banner-container img.pc-image{display:none}
+}
+@media(min-width:768px){.g6-tool-banner-component .g6-tool-banner-container img.mobile-image{display:none}
+}
+.g6-tool-banner-component .g6-text-component,.g6-tool-banner-component .g6-text-wrap{padding:0 !important}
+.g6-tool-banner-component.darkMode{background-color:#000}

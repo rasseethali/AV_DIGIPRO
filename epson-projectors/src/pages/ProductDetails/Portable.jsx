@@ -1,0 +1,32 @@
+import { useParams } from "react-router-dom";
+import portableProducts from "../../data/portabledata";
+
+import ProductHero from "../../Components/ProductDetails/ProductHero";
+import ProductSpecifications from "../../Components/ProductDetails/Specifications";
+import ProductFeatures from "../../Components/ProductDetails/ProductFeatures";
+import ProductGallery from "../../Components/ProductDetails/Gallery";
+import ProductApplication from "../../Components/ProductDetails/ProductApplication";
+
+const Portable = () => {
+  const { slug } = useParams();
+
+  const product = portableProducts.find(
+    (item) => item.slug === slug
+  );
+
+  if (!product) {
+    return <h1>Product Not Found</h1>;
+  }
+
+  return (
+    <>
+      <ProductHero product={product} />
+      <ProductApplication product={product} />
+      <ProductSpecifications product={product} />
+      <ProductFeatures product={product} />
+      <ProductGallery product={product} />
+    </>
+  );
+};
+
+export default Portable;

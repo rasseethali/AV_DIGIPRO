@@ -1,0 +1,127 @@
+function footerClickDatalayer(clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "footer_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger footer click data layer`)
+}
+
+function socialfollowFooterClickDatalayer(iconName, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "socialfollow_footer_click",
+        "site_category": siteCategory.toLowerCase(),
+        "icon_name": iconName.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger socialfollow footer click data layer`)
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+    let columnItemList = document.querySelectorAll('#footer .column-item');
+    let subscribeBtn = document.querySelector('#footer .subscribe-btn');
+    let iconList = document.querySelectorAll('#footer .social-item a');
+    if(columnItemList.length > 0){
+        Array.from(columnItemList).forEach(item=>{
+            item.addEventListener('click',function(event){
+                const clickText = event.currentTarget.textContent ? event.currentTarget.textContent.trim() : ''
+                const nextPageLocation = event.currentTarget.href ? event.currentTarget.href : ''
+                footerClickDatalayer(clickText,nextPageLocation)
+            })
+        })
+    }
+    if(subscribeBtn){
+        subscribeBtn.addEventListener('click',function(event){
+            const subscribeInput = event.currentTarget.parentElement.querySelector('.subscribe-input');
+            const clickText = subscribeInput ? subscribeInput.value.trim() : ''
+            const nextPageLocation = event.currentTarget.parentElement.action ? event.currentTarget.parentElement.action : ''
+            footerClickDatalayer(clickText,nextPageLocation)
+        },false)
+    }
+    if(iconList.length > 0){
+        Array.from(iconList).forEach(icon=>{
+            icon.addEventListener('click',function(event){
+                const iconName = event.currentTarget.querySelector('img').alt ? event.currentTarget.querySelector('img').alt : ''
+                const nextPageLocation = event.currentTarget.href ? event.currentTarget.href : ''
+                socialfollowFooterClickDatalayer(iconName,nextPageLocation)
+            })
+        })
+    }
+
+})
+window.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('bottom-item-area')) {
+        let copyrightW = document.getElementById('copyright').offsetWidth;
+        let bottomItemW = document.getElementById('bottom-item-area').offsetWidth;
+        let bottomItem = document.getElementById('bottom-item-area');
+        let copyrightTop = document.getElementsByClassName('copyright-top')[0];
+        let copyrightBottom = document.getElementsByClassName('copyright-bottom')[0];
+
+        if (window.innerWidth >= 1220 && copyrightW + bottomItemW > 1000) {
+            copyrightTop.classList.add('hide');
+            copyrightBottom.classList.remove('hide');
+            bottomItem.classList.add('bottom-item-area-top');
+        }
+    }
+
+    /**
+     * Accordion
+     */
+    let accordion = document.getElementsByClassName('column-block');
+    if (window.innerWidth < 1220) {
+        for (i = 0; i < accordion.length; i++) {
+            accordion[i].addEventListener('click', (e) => {
+                e.stopPropagation()
+                e.currentTarget.classList.toggle('active');
+            });
+        }
+    }
+
+    // subscribe form email validation
+    const form = document.querySelector('.subscribe-form');
+    if (form) {
+        const input = form.querySelector('.subscribe-input');
+        form.addEventListener('submit', (e) => {
+            const email = input.value.trim();
+
+            if (!validateEmail(email)) {
+                console.info('Invalid email address');
+                e.preventDefault();
+                input.classList.add('input-error');
+            }
+            else {
+                input.classList.remove('input-error');
+            }
+        });
+    }
+});
+window.addEventListener('load', () => {
+    const footerStructureData = function () {
+        const footerLinks = Array.from(document.querySelectorAll('.social-item a')).map(a => a.href);
+        const description = document.getElementById('indexMetaDescription')?.value;
+        const site = document.querySelector("input.localePath")?.value;
+        const footerJsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "url": location.origin + '/' + (site ? site : 'en-us') + '/index.html',
+            "sameAs": footerLinks,
+            "logo": "https://image.benq.com/is/image/benqco/site-thumbnail-b2c-1200x630",
+            "name": "BenQ",
+            "description": description
+        }
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(footerJsonLd, null, 2);
+        document.head.appendChild(script);
+    }
+    footerStructureData();
+});

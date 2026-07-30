@@ -1,0 +1,14 @@
+let savedHash = window.location.hash;
+if (savedHash) {
+  history.replaceState(null, null, " ");
+}
+window.addEventListener("load", () => {
+  if (savedHash) {
+    const elementId = savedHash.substring(1);
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    history.replaceState(null, null, savedHash);
+  }
+});

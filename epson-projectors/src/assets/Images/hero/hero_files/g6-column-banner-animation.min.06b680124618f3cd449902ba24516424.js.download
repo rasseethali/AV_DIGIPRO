@@ -1,0 +1,108 @@
+function initAutoLoop(element){
+    new Vue({
+        el: `.${element}`,
+        mounted() {
+            this.$refs.video.addEventListener('loadedmetadata', (event) => {
+                this.checkVideoInViewport()
+                window.addEventListener('scroll', this.checkVideoInViewport)
+            })
+        },
+        destroyed() {
+            this.$refs.video.removeEventListener('loadedmetadata')
+            window.removeEventListener('scroll', this.checkVideoInViewport);
+        },
+        data() {
+            return {
+                videoStatus: false,
+                clickPause: false,
+                lastScrollTop:0,
+                isVideoComponent:document.querySelector(`.${element}`).parentElement.classList.contains('g6-video-component')
+            }
+        },
+        methods: {
+            checkVideoInViewport() {
+                let st = window.pageYOffset || document.documentElement.scrollTop;
+                if (st > this.lastScrollTop){
+                    if (!this.clickPause) {
+                        if (this.$el.getBoundingClientRect().top <= window.innerHeight / 2 && (this.$el.getBoundingClientRect().bottom > window.innerHeight / 2)) {
+                            this.videoStatus = true
+        
+                        } else {
+                            this.videoStatus = false
+                        }
+                    } else {
+        
+                        if (this.$el.getBoundingClientRect().top <= window.innerHeight / 2 && (this.$el.getBoundingClientRect().bottom > window.innerHeight / 2)) {
+        
+                        } else {
+                            this.videoStatus = false
+                        }
+                    }
+                } else if(st < this.lastScrollTop){
+                    if (!this.clickPause) {
+                        if (this.$el.getBoundingClientRect().top < window.innerHeight/2 && (this.$el.getBoundingClientRect().bottom >= window.innerHeight/2)) {
+                            this.videoStatus = true
+        
+                        } else {
+                            this.videoStatus = false
+                        }
+                    } else {
+        
+                        if (this.$el.getBoundingClientRect().top < window.innerHeight && (this.$el.getBoundingClientRect().bottom >= window.innerHeight/2)) {
+        
+                        } else {
+                            this.videoStatus = false
+                        }
+                    }
+                }
+                this.lastScrollTop = st
+            },
+            play() {
+                this.clickPause = false
+                this.videoStatus = true
+            },
+            pause() {
+                this.clickPause = true
+                this.videoStatus = false
+            }
+        },
+        watch: {
+            videoStatus: {
+                handler(val) {
+                    if (val == true) {
+                        if (this.$refs.video.play) {
+                            this.$refs.video.play()
+                        }
+                    } else {
+                        if (this.$refs.video.pause) {
+                            this.$refs.video.pause()
+                        }
+                    }
+                },
+            }
+        }
+    })
+}
+
+window.addEventListener("load", function (event) {
+    const body = document.querySelector('body');
+    gsap.utils.toArray(`.g6-column-banner-component`).forEach((item) => {
+        const resizeObserver = new ResizeObserver(entries => {
+            animation.scrollTrigger.refresh()
+        });
+        let animation = gsap.timeline({
+            scrollTrigger: {
+                trigger: item,
+                start: "bottom 20%",
+                scrub: true,
+            },
+        });
+        let container = item.querySelector('.g6-column-banner-container');
+        animation.to(
+            container, { opacity: '0', transform: 'translateY(-300px)' }
+        )
+        resizeObserver.observe(body);
+    })
+})
+
+

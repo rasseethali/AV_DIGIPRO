@@ -1,0 +1,97 @@
+function videoEvent(){
+    new Vue({
+        el: `.${el}`,
+        data() {
+            return {
+                videoStatus: false,
+                autoLoop:true,
+                end:false,
+                initTouch: false,
+                desktop: false
+            }
+        },
+        created() {
+            if(window.innerWidth > 1220){
+                this.desktop = true;
+            }
+        },
+        mounted() {
+            let vm = this;
+            if(this.$refs.videoMobile){
+                if(!vm.desktop){
+                    this.$refs.videoMobile.getAttribute('data-src') ? this.$refs.videoMobile.src = this.$refs.videoMobile.getAttribute('data-src') : null;     
+                }
+                if(!this.$refs.videoMobile.classList.contains('auto-loop')){
+                    vm.autoLoop = false;
+                }
+                this.$refs.videoMobile.addEventListener('loadedmetadata', (event) => {
+                    vm.checkVideoInViewport();
+                    window.addEventListener('scroll', vm.checkVideoInViewport);
+                });
+        
+                this.$refs.videoMobile.onended = function(){
+                    vm.end = true;
+                }
+                let body = document.querySelector("body");
+                body.addEventListener('touchstart', function () {
+                    if(vm.initTouch == false){
+                        if (vm.$refs.videoMobile.playing) {
+                        }
+                        else {
+                            vm.$refs.videoMobile.play();
+                        }
+                        vm.initTouch = true;
+                    }
+                })
+            }
+            if(this.$refs.videoPc){
+                if(vm.desktop){
+                    this.$refs.videoPc.getAttribute('data-src') ? this.$refs.videoPc.src = this.$refs.videoPc.getAttribute('data-src') : null;     
+                }
+                if(!this.$refs.videoPc.classList.contains('auto-loop')){
+                    vm.autoLoop = false;
+                }
+                this.$refs.videoPc.addEventListener('loadedmetadata', (event) => {
+                    vm.checkVideoInViewport();
+                    window.addEventListener('scroll', vm.checkVideoInViewport);
+                });
+                
+                this.$refs.videoPc.onended = function(){
+                    vm.end = true;
+                }
+            }
+        },
+        destroyed() {
+            this.$refs.videoPc.removeEventListener('loadedmetadata');
+            this.$refs.videoMobile.removeEventListener('loadedmetadata');
+            window.removeEventListener('scroll', this.checkVideoInViewport);
+        },
+        methods: {
+            checkVideoInViewport() {
+                if(!this.autoLoop && this.end){
+                    return
+                }
+                if (this.$el.getBoundingClientRect().top < window.innerHeight && this.$el.getBoundingClientRect().bottom > 0) {
+                    this.videoStatus = true;
+                } else {
+                    this.videoStatus = false;
+                }
+            },
+        },
+        watch: {
+            videoStatus: {
+                handler(val) {
+                    if (val == true) {
+                        this.$refs.videoPc ? this.$refs.videoPc.play() : null;
+                        this.$refs.videoMobile ? this.$refs.videoMobile.play() : null;
+                    } else {
+                        this.$refs.videoPc ? this.$refs.videoPc.pause() : null;
+                        this.$refs.videoMobile ? this.$refs.videoMobile.pause() : null;
+                        this.$refs.videoPc ? this.$refs.videoPc.currentTime = 0 : null;
+                        this.$refs.videoMobile ? this.$refs.videoMobile.currentTime = 0 : null
+                    }
+                }
+            }
+        }
+    });    
+}

@@ -1,0 +1,42 @@
+#locale-switcher{display:none;background:#f2e6da;z-index:999;position:relative;font-family:'Roboto'}
+#locale-switcher .container{display:flex;align-items:center;margin-right:auto;margin-left:auto;position:relative;color:#000;width:100%;height:88px;z-index:1001;max-width:1220px;letter-spacing:normal;padding:0}
+@media(max-width:1219px){#locale-switcher .container{padding:16px 20px;display:block;height:auto}
+}
+@media(max-width:767px){#locale-switcher .container{padding:12px 20px}
+}
+#locale-switcher .container>p{display:none;flex:1;font-family:"Roboto";line-height:1.5;margin:0;font-size:16px}
+@media(max-width:767px){#locale-switcher .container>p{margin-right:40px}
+}
+#locale-switcher .container .block{display:flex}
+@media(max-width:1219px){#locale-switcher .container .block{margin-top:16px;padding:0}
+}
+#locale-switcher .container .language{margin-right:16px;padding:0 12px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;background:#fff;height:56px;width:290px;position:relative;cursor:pointer;border:1px solid #000}
+#locale-switcher .container .language:hover{outline:1px solid #000}
+#locale-switcher .container .language:focus,#locale-switcher .container .language:focus-visible{background-color:#f2f2f2;outline:2px solid #7231c6 !important;outline-offset:2px}
+#locale-switcher .container .language:focus:not(:focus-visible){outline:1px solid #000 !important}
+#locale-switcher .container .language:active .site{color:#000}
+@media(max-width:767px){#locale-switcher .container .language{height:28px}
+}
+#locale-switcher .container .language .site{color:#757575;font-weight:400;font-family:"Roboto";font-size:16px;line-height:18.75px}
+@media(max-width:767px){#locale-switcher .container .language .site{max-width:168px;font-size:14px;line-height:16.41px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+}
+#locale-switcher .container .language .toggle{width:20px;height:20px;display:flex;align-items:center;justify-content:center;transform:rotate(180deg)}
+#locale-switcher .container .language .language-change{padding:12px 0;border-radius:4px;display:none;position:absolute;width:100%;background:#fff;z-index:1001;top:62px;left:-1px;color:#000;border:1px solid #000;width:290px;text-decoration:none}
+@media(max-width:767px){#locale-switcher .container .language .language-change{top:34px}
+}
+#locale-switcher .container .language .language-change span{width:100%;padding:12px;color:#757575;text-decoration:none}
+#locale-switcher .container .language .language-change span:hover{background-color:#f2f2f2}
+#locale-switcher .container .language .language-change .toggle{opacity:0}
+#locale-switcher .container .language.active .language-change{display:flex;align-items:center;justify-content:flex-start}
+#locale-switcher .container .language.active .toggle{transform:rotate(0)}
+#locale-switcher .container .change{margin-right:16px}
+@media(max-width:1219px){#locale-switcher .container .change{margin-right:0}
+}
+#locale-switcher .container .change a.change-btn{display:flex;align-items:center;justify-content:center;font-family:"Poppins";font-size:16px;line-height:1.5;font-weight:700;color:#fff;padding:16px 20px;border-radius:4px;background:#000;text-decoration:none}
+#locale-switcher .container .change a.change-btn:hover{background-color:#7231c6}
+#locale-switcher .container .change a.change-btn:active{background:#6b53cc}
+@media(max-width:767px){#locale-switcher .container .change a.change-btn{font-weight:500;font-family:"Roboto";font-size:14px;line-height:16.41px;padding:6px 12px}
+}
+#locale-switcher .container .Close{width:24px;height:24px;display:flex;align-items:center;justify-content:center;padding:0;border:0;background:transparent;appearance:none;-webkit-appearance:none;cursor:pointer}
+@media(max-width:1219px){#locale-switcher .container .Close{position:absolute;top:16px;right:20px}
+}

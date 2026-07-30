@@ -1,0 +1,235 @@
+function extendClick(lower_title) {
+    window.dataLayer = window.dataLayer ? window.dataLayer : []
+    window.dataLayer.push({
+        'event': 'extend_click',
+        'site_category': 'b2c',
+        'style_type': 'btn',
+        'component_name': 'spectable',
+        'lower_title': lower_title
+    })
+    console.info(`datalayer trigger extend_click`)
+}
+
+function productImpression(datalayerData) {
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+
+    window.dataLayer = window.dataLayer ? window.dataLayer : []
+    dataLayer.push({
+        'event': 'productImpression',
+        'ecommerce': {
+            'currencyCode': currencyCode,
+            'impressions': datalayerData
+        }
+    });
+    console.info(`datalayer trigger productImpression`)
+}
+function productClick(list, datalayerData) {
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+
+    window.dataLayer = window.dataLayer ? window.dataLayer : []
+    dataLayer.push({
+        'event': 'productClick',
+        'ecommerce': {
+            'currencyCode': currencyCode,
+            'click': {
+                'actionField': { 'list': list },
+                'products': [datalayerData]
+            }
+        },
+    });
+    console.info(`datalayer trigger productClick`)
+
+}
+
+// similar product
+function similarProductDatalayer() {
+    const currency = document.querySelector('[name="currency"]').value
+    const similarProductList = document.querySelectorAll('.g6-similar-product.datalayer-count')
+    if (similarProductList.length > 0) {
+        Array.from(similarProductList).forEach((similarProduct) => {
+            const productImpressionList = similarProduct.querySelectorAll('.datalayer-product-impression');
+            const blockList = similarProduct.querySelectorAll('.d-block');
+            const buyButtonList = similarProduct.querySelectorAll('.buy-btn');
+            const priceList = similarProduct.querySelectorAll('.bottom-wrap .spec-content .price-wrap');
+            const imgList = similarProduct.querySelectorAll('.img-wrap');
+            let productImpressionListArray = []
+            if (productImpressionList.length > 0) {
+                Array.from(productImpressionList).forEach((productImpression, productIndex) => {
+                    const ecProductName = productImpression.parentElement.querySelector('input.datalayer-product-name') ? productImpression.parentElement.querySelector('input.datalayer-product-name').value : '';
+                    if (productImpression.value && ecProductName) {
+                        const data = JSON.parse(productImpression.value)
+                        data.position = `${productIndex + 1}`;
+                        data.brand = 'BenQ'
+                        data.name = ecProductName ? ecProductName : 'not_available'
+                        data.variant = 'not_available'
+                        let price = 'not_available'
+                        if (priceList[productIndex].querySelector('.price')) {
+                            price = priceList[productIndex].querySelector('.price').innerText.replace(currency, '')
+                        }
+                        if (priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final')) {
+                            price = priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final > span').innerText
+                        }
+                        data.price = `${price}`;
+                        if(window.datalayerCategory?.[data.id]?.category){ 
+                            data.category = window.datalayerCategory[data.id].category;
+                        }
+                        productImpressionListArray.push(data)
+                    }
+                })
+            }
+            if (buyButtonList.length > 0) {
+                Array.from(buyButtonList).forEach((buyButton) => {
+                    buyButton.addEventListener('click', function (e) {
+                        const parentElement = e.currentTarget.parentElement;
+                        const productIndex = Array.from(blockList).indexOf(parentElement)
+                        const productClickData = parentElement.querySelector('.datalayer-product-click')
+                        const productClickECName = parentElement.querySelector('.datalayer-product-name') ? parentElement.querySelector('.datalayer-product-name').value : ''
+                        
+                        if (productClickData.value && productClickECName) {
+                            const data = JSON.parse(productClickData.value);
+                            const list = data.list;
+                            delete data.list;
+                            data.position = `${productIndex + 1}`;
+                            data.brand = 'BenQ';
+                            data.name = productClickECName ? productClickECName : 'not_available';
+                            data.variant = 'not_available';
+                            let price = 'not_available';
+                            if (priceList[productIndex].querySelector('.price')) {
+                                price = priceList[productIndex].querySelector('.price').innerText.replace(currency, '')
+                            }
+                            if (priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final')) {
+                                price = priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final > span').innerText
+                            }
+                            if(window.datalayerCategory?.[data.id]?.category){ 
+                                data.category = window.datalayerCategory[data.id].category;
+                            }
+                            data.price = `${price}`;
+                            productClick(list, data)
+                        }
+                    })
+                })
+            }
+            if(productImpressionListArray.length > 0){
+                productImpression(productImpressionListArray)
+            }
+            if (imgList.length > 0) {
+                Array.from(imgList).forEach((imgNode) => {
+                    imgNode.addEventListener('click', function (e) {
+                        const dataSkuValue = imgNode.getAttribute('data-sku');
+                        const matchingSkuSpec = document.querySelector(`.bottom-wrap .spec-content li[data-sku="${dataSkuValue}"]`);
+
+                        const productIndex = Array.from(blockList).indexOf(matchingSkuSpec);
+                        const productClickData = matchingSkuSpec.querySelector('.datalayer-product-click');
+                        const productClickECName = matchingSkuSpec.querySelector('.datalayer-product-name') ? matchingSkuSpec.querySelector('.datalayer-product-name').value : ''
+                        
+                        if (productClickData.value && productClickECName) {
+                            const data = JSON.parse(productClickData.value);
+                            const list = data.list;
+                            delete data.list;
+                            data.position = `${productIndex + 1}`;
+                            data.brand = 'BenQ';
+                            data.name = productClickECName ? productClickECName : 'not_available';
+                            data.variant = 'not_available';
+                            let price = 'not_available';
+                            if (priceList[productIndex].querySelector('.price')) {
+                                price = priceList[productIndex].querySelector('.price').innerText.replace(currency, '')
+                            }
+                            if (priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final')) {
+                                price = priceList[productIndex].querySelector('.magento-price:not([style*="display: none"]) .final > span').innerText
+                            }
+                            if(window.datalayerCategory?.[data.id]?.category){ 
+                                data.category = window.datalayerCategory[data.id].category;
+                            }
+                            data.price = `${price}`;
+                            productClick(list, data)
+                        }
+                    })
+                })
+            }
+        })
+    }
+}
+
+function specAndOverviewPageProductImpression(datalayerInput) {
+    const skucode = document.querySelector('input[name="sku"]') ? encodeURIComponent(document.querySelector('input[name="sku"]').value.trim()) : ''
+    const ecType = document.querySelector('input[name="ecType"]') ? document.querySelector('input[name="ecType"]').value.trim() : ''
+    const productCondition = document.querySelector('input[name="productCondition"]') ? document.querySelector('input[name="productCondition"]').value.trim() : ''
+    const disableMagentoECStandardPrice = document.querySelector('input[name="disableMagentoECStandardPrice"]') ? document.querySelector('input[name="disableMagentoECStandardPrice"]').value.trim() : ''
+    const discontinuedStandardPrice = document.querySelector('input[name="discontinuedStandardPrice"]') ? document.querySelector('input[name="discontinuedStandardPrice"]').value.trim() : ''
+    const newProductPrice = document.querySelector('input[name="newProductPrice"]') ? document.querySelector('input[name="newProductPrice"]').value.trim() : ''
+
+    datalayerInput.position = "1";
+    datalayerInput.brand = 'BenQ';
+    datalayerInput.variant = 'not_available';
+    datalayerInput.price = 'not_available';
+    const getPricePromise = new Promise((resolve, reject) => {
+        if (ecType == 'enableMagentoEC') {
+            if (productCondition == 'refurbish') {
+                resolve(newProductPrice ? newProductPrice : 'not_available')
+            } else {
+                minicart2.getPrice([skucode]).then(res => {
+                    if (res.length > 0) {
+                        if (res[0]) {
+                            if (res[0][skucode]) {
+                                if (res[0][skucode].finalPrice) {
+                                    resolve(res[0][skucode])
+                                } else {
+                                    resolve('not_available')
+                                }
+                            } else {
+                                resolve('not_available')
+                            }
+                        } else {
+                            resolve('not_available')
+                        }
+                    } else {
+                        resolve('not_available')
+                    }
+                })
+            }
+
+        } else if (ecType == 'disableMagentoEC') {
+            resolve(disableMagentoECStandardPrice ? disableMagentoECStandardPrice : 'not_available')
+        } else if (ecType == 'discontinued') {
+            resolve(discontinuedStandardPrice ? discontinuedStandardPrice : 'not_available')
+        }
+    });
+    getPricePromise.then((response) => {
+        if(window.datalayerCategory?.[skucode]?.category){ 
+            datalayerInput.category = window.datalayerCategory[skucode].category;
+        }
+        if(typeof response == 'object'){
+            datalayerInput.name = response.name ? response.name : 'not_available';
+            datalayerInput.price = `${response.finalPrice.value ? response.finalPrice.value : 'not_available'}`;
+            window.productPrice = `${response.finalPrice.value ? response.finalPrice.value : 'not_available'}`;
+            window.productName = datalayerInput.name;
+            productImpression([datalayerInput])
+        }else{
+            datalayerInput.price = `${response}`;
+            window.productPrice = `${response}`;
+            window.productName = datalayerInput.name;
+            productImpression([datalayerInput])
+        }
+    })
+}
+
+window.addEventListener('load', function () {
+    const buyPageExist = document.querySelector('.g6-local-navigation .g6-local-navigation-container .right-container li.button') ? true : false;
+
+    if(buyPageExist){
+        // overview page
+        const overViewProductImpression = document.querySelector('.g6-scenario-banner .datalayer-product-impression') ? JSON.parse(document.querySelector('.g6-scenario-banner .datalayer-product-impression').value) : '';
+        if (overViewProductImpression) {
+            specAndOverviewPageProductImpression(overViewProductImpression)
+        }
+    
+        // spec page
+        const specProductImpression = document.querySelector('.g6-spec-table .datalayer-product-impression') ? JSON.parse(document.querySelector('.g6-spec-table .datalayer-product-impression').value) : '';
+    
+        if (specProductImpression) {
+            specAndOverviewPageProductImpression(specProductImpression)
+        }
+    }
+
+})
+

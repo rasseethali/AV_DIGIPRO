@@ -1,0 +1,360 @@
+function isAuthoringMode() {
+    if (document.cookie.indexOf('cq-authoring-mode') === -1) {
+        return false;
+    } else {
+        return true
+    }
+}
+
+function callRedirectJsonPath() {
+    return new Promise((resolve, reject) => {
+        fetch("/content/dam/system/b2c/local-reminder/redirect.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => resolve(data))
+            .catch(error => {
+                console.error('Error:', error);
+                reject(error);
+            });
+    });
+}
+
+function isRedirect() {
+    if (redirect) {
+        if (window.location.href.includes(redirect.replace('/index.html', ''))) {
+            localeSwitcher = false;
+        } else {
+            let checkCookie = getCookie("current_location");
+            if (checkCookie === "") {
+                localeSwitcher = true;
+            }
+            else {
+                var lang = document.querySelector(".localePath").value;
+                var show = getCookie("show_local_reminder");
+                if (show.includes(lang)) {
+                    localeSwitcher = false
+                } else {
+                    localeSwitcher = true;
+                }
+            }
+        }
+    }
+    else {
+        let checkCookie = getCookie("current_location");
+        if (checkCookie === "") {
+            localeSwitcher = true;
+        }
+        else {
+            var lang = document.querySelector(".localePath").value;
+            var show = getCookie("show_local_reminder");
+            if (show.includes(lang)) {
+                localeSwitcher = false
+            }
+            else {
+                localeSwitcher = true;
+            }
+        }
+    }
+}
+
+function callSitesJson() {
+    return new Promise((resolve, reject) => {
+        fetch("/content/dam/system/b2c/local-reminder/region.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => resolve(data))
+            .catch(error => {
+                console.error('Error:', error);
+                reject(error);
+            });
+    });
+}
+
+function showLocalSwitcher() {
+    let localSwitcher = document.querySelector("#locale-switcher")
+
+    if (localeSwitcher === false) {
+        localSwitcher.style.display = "none";
+    } else {
+        localReminder();
+    }
+}
+
+async function callAzureLocation() {
+    try {
+        let currentAPI = getOriginalClientIP();
+        let json = await callRedirectJsonPath();
+
+        if(!nation && currentAPI) {
+            let azureURL = '/api/AzureLocation/' + currentAPI;
+            let response = await fetch(azureURL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+    
+            let data = await response.json();
+            nation = data.countryCode;
+        }
+
+        redirect = json[nation];
+
+        if (document.querySelector("#locale-switcher #currentCountry").value === "") {
+            document.querySelector("#locale-switcher #currentCountry").value = nation;
+        }
+
+        isRedirect();
+        showLocalSwitcher();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function getOriginalClientIP() {
+    return getCookie("original_client_ip");
+}
+
+async function localReminder() {
+    try {
+        //取API的部分拉去外面執行
+        if (redirect === undefined) {
+            //no EC cover site
+            console.log("無法運送到當前ip");
+            document.querySelector("#locale-switcher .none").style.display = 'block'
+            document.querySelector("#locale-switcher .language").style.display = 'none';
+            document.querySelector("#locale-switcher .change").style.display = 'none';
+            document.querySelector("#locale-switcher .ec").style.display = 'none';
+            document.querySelector("#locale-switcher").style.display = 'block'
+            document.querySelector("#locale-switcher").style.visibility = 'visible';
+        } else {
+            let dataArray = {};
+            if (!window.location.href.includes(redirect.replace('/index.html', ''))) {
+                //redirect to correct site
+                document.querySelector("#locale-switcher").style.display = 'block'
+                document.querySelector("#locale-switcher .ec").style.display = 'block'
+
+                dataArray = await callSitesJson();
+                // dataArray.ec.code
+                let text = dataArray.ec.filter(function (item) {
+                    return item.code === nation;
+                })
+                // dataArray.ec.site match dataArray.region.site
+                let region = Object.values(dataArray.region).flat().filter(function (item) {
+                    return item.site == text[0].site;
+                })
+                document.querySelector("#locale-switcher .site").textContent = `${text[0].site} / ${region[0].language}`;
+                document.querySelector("#locale-switcher .change-btn").href = redirect.replace('/index.html', '');
+                document.querySelector("#locale-switcher").style.visibility = 'visible';
+                safelyFocusLocalReminder();
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function handleLocalReminderKeydown(event) {
+    if (event.key !== 'Tab') {
+        return;
+    }
+
+    const switcher = document.querySelector('#locale-switcher');
+    if (!switcher || window.getComputedStyle(switcher).display === 'none') {
+        return;
+    }
+
+    const focusables = Array.from(switcher.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+        .filter(function(el) {
+            return el.offsetParent !== null;
+        });
+
+    if (!focusables.length) {
+        return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+        return;
+    }
+
+    if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+    }
+}
+
+function safelyFocusLocalReminder() {
+    setTimeout(() => {
+        const isCookieBarVisible = window.cookiebar && window.cookiebar.cookieBarVisible;
+        if (!isCookieBarVisible) {
+            const switcher = document.querySelector('#locale-switcher');
+            if (switcher && window.getComputedStyle(switcher).display !== 'none') {
+                const focusable = switcher.querySelector('[tabindex="0"], button:not([disabled]), a[href]');
+                if (focusable && typeof focusable.focus === 'function') {
+                    focusable.focus();
+                }
+            }
+        }
+    }, 150);
+}
+
+// g6 add
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function createCookie(name, value, days) {
+    var expires = "";
+    var cookie_domain = filterXSS(window.location.hostname);
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+        if(days === "session"){
+            expires = "";
+        }
+        else{
+            expires = "; expires=Wed, 31 Dec 2200 23:59:59 GMT"    
+        }
+    }
+    document.cookie = filterXSS(name + "=" + value + expires + "; path=/" + "; domain=" + cookie_domain + "; Secure; SameSite=Strict");
+}
+
+function deleteCookie(cookieName) {
+    var cookieDomain = ((match = /(?:\.benq\.[^.\/]{1,3}\.[^.\/]{1,3}|\.benq\.[^.\/\:]{1,3}|\.benq\.[^.\/\:]{1,2})/i.exec(window.location.hostname)) !== null) ? match[0] : filterXSS(window.location.hostname);
+    document.cookie = cookieName + "=;path=/;domain=" + cookieDomain + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+}
+
+// check if isAuthoringMode() is true
+// if false, check cookie "current_location" and "show_local_reminder" , if both cookies are empty, call callAzureLocation() function
+// callAzureLocation(): get API address and redirect.json then call api to get countryCode and match with redirect.json
+// then call isRedirect() to check if localeSwitcher is true or false
+// then call showLocalSwitcher(),if localeSwitcher is true, call localReminder(), otherwise hide the locale-switcher
+// localReminder(): if (redirect) call callSitesJson() to get region.json and show the site name and link, otherwise show no EC info
+
+document.querySelector('body').style.visibility = 'hidden'
+var localeSwitcher = false;
+var nation = getCookie("current_location") || '';
+var redirect = '';
+
+document.querySelector('body').style.visibility = 'visible'
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    const switcher = document.querySelector("#locale-switcher");
+    if (switcher) {
+        switcher.addEventListener('keydown', handleLocalReminderKeydown);
+    }
+
+    if (!isAuthoringMode()) {
+        let tempLang = document.querySelector(".localePath").value;
+        if (getCookie("current_location") && getCookie("show_local_reminder").includes(tempLang)) {
+            let localeSwitcherBlock = document.querySelector("#locale-switcher");
+            localeSwitcherBlock.style.display = "none";
+        }
+    } else {
+        console.log("Authoring Mode");
+    }
+    
+    let language = document.querySelector("#locale-switcher .language");
+    language.addEventListener('click', function () {
+        const isActive = $(this).toggleClass("active").hasClass("active");
+        this.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        var site = filterXSS(document.querySelector("#locale-switcher #currentCountry").value);
+        var lang = filterXSS(document.querySelector(".localePath").value);
+        var checkLocal = getCookie("show_local_reminder");
+        createCookie("current_location", site, "session");
+        if (checkLocal === "") {
+            var local = [];
+            local.push(lang);
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(local)), "session");
+        } else {
+            var locales = JSON.parse(checkLocal);
+            locales.push(lang)
+            result = [...new Set(locales)];
+            deleteCookie("show_local_reminder");
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(result)), "session");
+        }
+    });
+
+    language.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            this.click();
+        }
+    });
+
+    let close = document.querySelector("#locale-switcher .Close");
+    close.addEventListener('click', function () {
+        document.querySelector("#locale-switcher").style.display = 'none';
+        var site = filterXSS(document.querySelector("#locale-switcher #currentCountry").value);
+        var lang = filterXSS(document.querySelector(".localePath").value);
+        var checkLocal = getCookie("show_local_reminder");
+        createCookie("current_location", site, "session");
+        if (checkLocal === "") {
+            var local = [];
+            local.push(lang);
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(local)), "session");
+        } else {
+            var locales = JSON.parse(checkLocal);
+            locales.push(lang)
+            result = [...new Set(locales)];
+            deleteCookie("show_local_reminder");
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(result)), "session");
+        }
+        const skipToMainContent = document.querySelector('.skip-to-main-content');
+        if (skipToMainContent && typeof skipToMainContent.focus === 'function') {
+            setTimeout(() => {
+                skipToMainContent.focus();
+            }, 0);
+        }
+    });
+
+    let change = document.querySelector("#locale-switcher .change");
+    change.addEventListener('click', function () {
+        var site = filterXSS(document.querySelector("#locale-switcher #currentCountry").value);
+        var lang = filterXSS(document.querySelector(".localePath").value);
+        var checkLocal = getCookie("show_local_reminder");
+        createCookie("current_location", site, "session");
+        if (checkLocal === "") {
+            var local = [];
+            local.push(lang);
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(local)), "session");
+        } else {
+            var locales = JSON.parse(checkLocal);
+            locales.push(lang)
+            result = [...new Set(locales)];
+            deleteCookie("show_local_reminder");
+            createCookie("show_local_reminder", encodeURIComponent(JSON.stringify(result)), "session");
+        }
+    });
+});

@@ -1,0 +1,175 @@
+function globalnavbarClickDatalayer(clickText, styleType, componentName, lowerTitle, ctaType, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(nextPageLocation !== 'n/a'){
+        nextPageLocation = nextPageLocation.replace('/content/b2c',window.location.origin)
+    }
+    window.dataLayer.push({
+        "event": "globalnavbar_click",
+        "site_category": siteCategory.toLowerCase(),
+        "style_type": styleType.toLowerCase(),
+        "component_name": componentName.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "cta_type": ctaType.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger globalnavbar click data layer, component: `, componentName)
+}
+
+function minicartClickDatalayer(lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "minicart_click",
+        "site_category": siteCategory.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger minicart click data layer`)
+}
+
+function memberClickDatalayer(clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "member_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger member click data layer`)
+}
+
+function sitesearchClickDatalayer(clickText,searchSuggestion) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(searchSuggestion){
+        window.dataLayer.push({
+            "event": "sitesearch_suggestion_click",
+            "site_category": siteCategory.toLowerCase(),
+            "search_text": clickText.toLowerCase(),
+            "search_suggestion": searchSuggestion.toLowerCase()
+        })
+    }else{
+        if(clickText === 'magnifier icon' || clickText === 'submit'){
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "click_text": clickText.toLowerCase(),
+            })
+        }else{
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "style_type": clickText.toLowerCase(),
+            })
+        }
+    }
+
+    console.info(`trigger sitesearch click data layer`)
+}
+
+function megamenuClickDatalayer(upperTitle, lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "megamenu_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "upper_title": upperTitle.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger megamenu click data layer`)
+}
+
+function removeFromCartDatalayer(totalPrice, datalayerDataArray) {
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    dataLayer.push({
+        event: 'removeFromCart',
+        ecommerce: {
+            'currencyCode': currencyCode,
+            'value': totalPrice,
+            'remove': {
+                'products': datalayerDataArray
+            }
+        }
+    });
+}
+window.addEventListener('DOMContentLoaded', function () {
+    new Vue({
+        el: "#news-feed",
+        mounted() {
+            /**
+             * Init swiper
+             */
+            if (document.querySelectorAll('#news-feed .swiper-slide').length > 1) {
+                if (document.getElementById('enableAutoLoop').value !== 'true') {
+                    this.swiper = new Swiper('#news-feed .swiper', {
+                        navigation: true,
+                        updateOnWindowResize: true,
+                        loop: true,
+                        navigation: {
+                            prevEl: '.swiper-button-prev',
+                            nextEl: '.swiper-button-next',
+                        },
+                    });
+                } else {
+                    this.swiper = new Swiper('#news-feed .swiper', {
+                        navigation: true,
+                        updateOnWindowResize: true,
+                        loop: true,
+                        autoplay: {
+                            delay: 7000,
+                            disableOnInteraction: false,
+                        },
+                        navigation: {
+                            prevEl: '.swiper-button-prev',
+                            nextEl: '.swiper-button-next',
+                        },
+                    });
+                }
+
+            }
+
+
+            /**
+             * Add class after loaded
+             */
+            if (document.getElementById('news-feed')) {
+                document.getElementById('news-feed').classList.add('loaded-finished');
+            }
+        },
+        methods: {
+            globalnavbarDatalayerTrigger(event, styleType, componentName, lowerTitle, clickText, ctaType) {
+                // mobile
+                if (event.currentTarget.classList.contains('news-feed-mobile')) {
+                    clickText = event.currentTarget.querySelector('.link').textContent
+                    lowerTitle = event.currentTarget.querySelector('.text').textContent
+                    // pc
+                } else {
+                    clickText = event.currentTarget.textContent
+                    lowerTitle = event.currentTarget.previousElementSibling.textContent
+                }
+                const nextPageLocation = event.currentTarget.href ? event.currentTarget.href : 'n/a'
+                globalnavbarClickDatalayer(clickText, styleType, componentName, lowerTitle, ctaType, nextPageLocation)
+            },
+        }
+    });
+})

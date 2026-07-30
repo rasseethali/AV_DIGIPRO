@@ -1,0 +1,1 @@
+!function(){"use strict";var e={};e.d=function(t,n){for(var i in n)e.o(n,i)&&!e.o(t,i)&&Object.defineProperty(t,i,{enumerable:!0,get:n[i]})},e.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},window.validateEmail=function(e){if("undefined"==typeof document)return!1;const t=document.createElement("input");return t.type="email",t.value=e,t.validity.valid}}();

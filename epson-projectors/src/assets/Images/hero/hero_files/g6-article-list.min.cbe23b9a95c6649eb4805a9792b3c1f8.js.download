@@ -1,0 +1,177 @@
+function articlelistClickDatalayer(lowerTitle, clickText, next_page_location) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = [];
+    }
+    window.dataLayer.push({
+        event: 'articlelist_click',
+        site_category: siteCategory.toLowerCase(),
+        lower_title: lowerTitle.toLowerCase(),
+        click_text: clickText.toLowerCase(),
+        cta_type:
+            next_page_location.includes('/buy.html') || next_page_location.includes('/refurbished-buy.html')
+                ? 'buy'
+                : 'other',
+        next_page_location: next_page_location ? next_page_location : 'n/a',
+    });
+    console.info(`trigger article list click data layer`);
+}
+
+function ArrowClickDatalayer(event, directionText) {
+    if (event && event.currentTarget && !event.currentTarget.classList.contains('swiper-button-disabled')) {
+        const component = event.currentTarget.closest('.g6-article-list-component-container');
+        const titleElement = component ? component.querySelector('.title-container .title') : null;
+        const lowerTitle = titleElement ? titleElement.textContent : '';
+
+        const siteCategory = document.querySelector('.searchProject').value;
+        if (!window.dataLayer) {
+            window.dataLayer = [];
+        }
+        window.dataLayer.push({
+            event: 'arrow_click',
+            site_category: siteCategory.toLowerCase(),
+            component_name: 'articlelist',
+            component_arrow: directionText.toLowerCase(),
+            lower_title: lowerTitle ? lowerTitle.toLowerCase() : 'n/a',
+        });
+        console.info(`trigger articlelist click data layer`);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+    const component = document.querySelectorAll('.g6-article-list-component');
+    if (component.length > 0) {
+        Array.from(component).forEach((item) => {
+            const titleContainer = item.querySelector('.title-container');
+            const titleLink = titleContainer.querySelector('a.button');
+            if (titleLink) {
+                titleLink.addEventListener('click', function (event) {
+                    const clickText = event.currentTarget.textContent;
+                    const lowerTitle = titleContainer.parentElement.querySelector('h2.title').textContent;
+                    articlelistClickDatalayer(lowerTitle, clickText, event.currentTarget.href);
+                });
+            }
+        });
+    }
+});
+
+/* eslint-disable @typescript-eslint/no-this-alias */
+document.addEventListener('DOMContentLoaded', function () {
+    // tablet slider
+    const components = document.querySelectorAll('.g6-article-list-component');
+
+    components.forEach((item) => {
+        const articleInitSwiper = item.querySelector('.list-container');
+        const sliderBreakpoint = articleInitSwiper.classList.contains('list-4') ? 1632 : 1220;
+        const listItemLength = articleInitSwiper.querySelectorAll('.card').length;
+        // listItemLength = 4 && window.innerWidth <= 1632 || listItemLength = 3 && window.innerWidth <= 1220
+        if (listItemLength >= 3 && window.innerWidth <= sliderBreakpoint && window.innerWidth >= 768) {
+            item.querySelector('.article-list-button-next').style.display = 'block';
+            item.querySelector('.article-list-button-prev').style.display = 'block';
+            item.querySelector('.swiper-wrapper').style.justifyContent = 'normal';
+            // 在正確的螢幕尺寸範圍內初始化 Swiper
+            initSwiper(articleInitSwiper);
+        }
+    });
+
+    // click item to link
+    const list = document.querySelectorAll('.list-container .card');
+    list.forEach((item) => {
+        item.addEventListener('click', function (event) {
+            // datalayer
+            const lowerTitle = event.currentTarget.querySelector('.item-text-container p').textContent;
+            const clickText = event.currentTarget.querySelector('a.learn-more').textContent;
+            articlelistClickDatalayer(lowerTitle, clickText, this.getAttribute('data-link'));
+            window.location.href = this.getAttribute('data-link');
+        });
+    });
+});
+
+function initSwiper(element) {
+    if (element.swiper) {
+        element.swiper.destroy();
+    }
+
+    // 初始化 Swiper
+    const rtl = document.dir === 'rtl';
+
+    const swiper = new Swiper(element, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        loop: false,
+        spaceBetween: 20,
+        navigation: {
+            nextEl: element.querySelector('.swiper-button-next'),
+            prevEl: element.querySelector('.swiper-button-prev'),
+        },
+        rtl: rtl,
+        on: {
+            slideChange: function (e) {
+                const isMovingLeft = this.activeIndex < this.previousIndex;
+                if (isMovingLeft) {
+                    ArrowClickDatalayer(e, 'left');
+                } else {
+                    ArrowClickDatalayer(e, 'right');
+                }
+            },
+        },
+    });
+
+    return swiper;
+}
+
+window.addEventListener('resize', function () {
+    const components = document.querySelectorAll('.g6-article-list-component');
+
+    components.forEach((item) => {
+        const articleSwiper = item.querySelector('.list-container');
+        const sliderBreakpoint = articleSwiper.classList.contains('list-4') ? 1632 : 1220;
+        const listItemLength = articleSwiper.querySelectorAll('.card').length;
+
+        if (listItemLength >= 3 && window.innerWidth <= sliderBreakpoint && window.innerWidth >= 768) {
+            item.querySelector('.article-list-button-next').style.display = 'block';
+            item.querySelector('.article-list-button-prev').style.display = 'block';
+            item.querySelector('.swiper-wrapper').style.justifyContent = 'normal';
+
+            if (articleSwiper.swiper) {
+                articleSwiper.swiper.update();
+            } else {
+                initSwiper(articleSwiper);
+            }
+        } else if (articleSwiper.swiper) {
+            item.querySelector('.article-list-button-next').style.display = 'none';
+            item.querySelector('.article-list-button-prev').style.display = 'none';
+            item.querySelector('.swiper-wrapper').style.justifyContent = 'center';
+
+            // // 在尺寸範圍外，銷毀 Swiper
+            articleSwiper.swiper.destroy(true, true);
+        }
+    });
+});
+
+window.articlelistClickDatalayer = window.articlelistClickDatalayer || articlelistClickDatalayer;
+window.ArrowClickDatalayer = window.ArrowClickDatalayer || ArrowClickDatalayer;
+
+
+window.addEventListener('DOMContentLoaded', function () {
+    const articles = document.querySelectorAll('.g6-article-list .list-container .card a.learn-more');
+    const itemList = Array.from(articles).map((li, index) => {
+        const url = li.href || null;
+
+        return {
+            "@type": "ListItem",
+            position: index + 1,
+            url
+        };
+    });
+    const articleListJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": itemList
+    }
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(articleListJsonLd, null, 2);
+    document.head.appendChild(script);
+})
+

@@ -1,0 +1,416 @@
+var cookiebar = {
+    cookie_settings_benefit: document.querySelector("#cookie_settings_benefit") ? document.querySelector("#cookie_settings_benefit").value : "true",
+    agree_cookie: ''
+};
+var { createApp, ref, onMounted, watch, computed, onBeforeUnmount, nextTick } = Vue3
+
+var cookiebar = createApp({
+    setup() {
+        const cookieSettingVisible = ref(false);
+        const cookieBarVisible = ref(false);
+        let lastFocusedElement = null;
+        let lastCookieSettingTrigger = null;
+        const radius = document.querySelector('input[name="memberCenterRegion"]').value
+        const agreeCookieName = radius == 'EU' ? 'agree_cookie_eu' : 'agree_cookie'
+        const cookieDomain = ((match = /(?:\.benq\.[^.\/]{1,3}\.[^.\/]{1,3}|\.benq\.[^.\/\:]{1,3}|\.benq\.[^.\/\:]{1,2})/i.exec(encodeURIComponent(window.location.hostname))) !== null) ? match[0] : encodeURIComponent(window.location.hostname)
+        const rendertype = ref(document.querySelector('#cookiebar-rendertype').value);
+        let agreeCookie = ref(getCookie(agreeCookieName))
+        let mobile = ref(window.matchMedia("(max-width: 768px)").matches ? true : false); 
+        let rootPath = projectRootPath;
+
+        onMounted(()=>{
+            const exclude_links = document.querySelector('#cookiebar-excludelinks').value ?  document.querySelector('#cookiebar-excludelinks').value.split(",") : [];
+            const reg = /.+?\:\/\/.+?(\/.+?)(\..+?)(?:#|\?|$)/ ;
+            let pathname = '';
+            if (window.location.pathname == "/") {
+                rootPath = window.location.origin;
+                pathname = window.location.origin;
+            }
+            else {
+                pathname = reg.exec(window.location.href)[1];
+                if (pathname.indexOf(projectRootPath) < 0) {
+                    pathname = projectRootPath + pathname;
+                }
+            }
+            if (!agreeCookie.value && exclude_links.indexOf(pathname) < 0) {
+                cookieBarVisible.value = true
+            }
+    
+            if (agreeCookie.value) {
+                customerCodeTrigger(agreeCookie.value)
+            } else {
+                if (rendertype.value == 'must-agree') {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    agreeCookie.value = 'true'
+                    customerCodeTrigger(agreeCookie.value)
+                }
+            }
+    
+            if (radius == "EU") {
+                if (!agreeCookie.value || agreeCookie.value == "basic" || agreeCookie.value == "analyze") {
+                    deleteCookie('recentlyviewed', cookieDomain, "/");
+                }
+            }
+            window.addEventListener('resize', checkMobile)
+        });
+
+        onBeforeUnmount(()=>{
+            window.removeEventListener('resize', checkMobile)
+        })
+
+        function checkMobile() {
+            mobile.value = window.matchMedia("(max-width: 768px)").matches ? true : false;
+        }
+
+        // according to agreeCookie.value,trigger call custom function with corresponding parameter
+        function customerCodeTrigger(agreeCookieStatus) {
+            switch (agreeCookieStatus) {
+                case 'function':
+                    customcodeInject("head", rootPath + "/%s/configuration.header-functional.html");
+                    customcodeInject("body", rootPath + "/%s/configuration.body-functional.html");
+                    break;
+                case 'analyze':
+                    customcodeInject("head", rootPath + "/%s/configuration.header-analytical.html");
+                    customcodeInject("body", rootPath + "/%s/configuration.body-analytical.html");
+                    break;
+                case 'basic':
+                    customcodeInject("head", rootPath + "/%s/configuration.header-necessary.html");
+                    customcodeInject("body", rootPath + "/%s/configuration.body-necessary.html");
+                    break;
+                default:
+                    customcodeInject("head", rootPath + "/%s/configuration.header-full.html");
+                    customcodeInject("body", rootPath + "/%s/configuration.body-full.html");
+                    break;
+            }
+        }
+
+        // call custom
+        function customcodeInject(part, url) {
+            const locale = document.querySelector("input.localePath") ? document.querySelector("input.localePath").value : ''
+            if (!part || !url || !locale) {
+                console.log("customcodeInject Null");
+                return false;
+            }
+            axios({
+                responseType: 'json',
+                method: 'get',
+                url: url.replace("%s", locale),
+            }).then(res => {
+                const range = document.createRange();
+                const fragment = range.createContextualFragment(res.data);
+                if (part === 'body') {
+                    document.querySelector(`${part}`).prepend(fragment)
+                } else {
+                    document.querySelector(`${part}`).append(fragment)
+                }
+            }).catch(error => {
+                console.info(error)
+            })
+        };
+
+        // park focus on the stable dialog wrapper (not v-if'd) before swapping the
+        // welcome/setting subtree, so focus never falls through to <body> and escapes
+        // the modal (e.g. to local-reminder) during the async re-focus gap
+        function parkFocusInDialog() {
+            const container = document.querySelector('#cookie-bar-eu .cookie-bar-popup-container');
+            if (!container) {
+                return;
+            }
+            if (!container.hasAttribute('tabindex')) {
+                container.setAttribute('tabindex', '-1');
+            }
+            container.focus();
+        }
+
+        // cookie setting visible toggle methods
+        function focusFirstCookieSettingControl() {
+            nextTick(() => {
+                const settingContainer = document.querySelector('#cookie-bar-eu .cookie-bar-setting-container');
+                if (!settingContainer) {
+                    return;
+                }
+
+                const focusTarget = settingContainer.querySelector('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                if (focusTarget && typeof focusTarget.focus === 'function') {
+                    setTimeout(() => {
+                        focusTarget.focus();
+                    }, 50);
+                }
+            });
+        }
+
+        function openCookieSetting(event) {
+            lastCookieSettingTrigger = event && event.currentTarget ? event.currentTarget : null;
+            parkFocusInDialog();
+            cookieSettingVisible.value = true
+            focusFirstCookieSettingControl();
+        }
+        function closeCookieSetting() {
+            parkFocusInDialog();
+            cookieSettingVisible.value = false
+            nextTick(() => {
+                if (lastCookieSettingTrigger && typeof lastCookieSettingTrigger.focus === 'function') {
+                    lastCookieSettingTrigger.focus();
+                    return;
+                }
+
+                restoreCookieBarFocus();
+            });
+        }
+
+        function getCookieBarFocusTarget() {
+            const candidates = [
+                document.querySelector('.local-reminder .Close'),
+                document.querySelector('.skip-to-main-content'),
+                document.querySelector('#header .main-bar-mobile .icon-menu-hamburger'),
+                document.querySelector('#header .main-bar-pc .main-nav-item-title'),
+                document.querySelector('#header button:not([disabled])'),
+                document.querySelector('#header a[href]'),
+                lastFocusedElement
+            ];
+
+            return candidates.find((candidate) => {
+                if (!candidate || typeof candidate.focus !== 'function') {
+                    return false;
+                }
+                if (candidate.hasAttribute && candidate.hasAttribute('disabled')) {
+                    return false;
+                }
+                return true;
+            }) || null;
+        }
+
+        function restoreCookieBarFocus() {
+            nextTick(() => {
+                const focusTarget = getCookieBarFocusTarget();
+                if (focusTarget) {
+                    setTimeout(() => {
+                        const activeElement = document.activeElement;
+                        if (activeElement && activeElement !== focusTarget && typeof activeElement.blur === 'function') {
+                            activeElement.blur();
+                        }
+                        focusTarget.focus();
+                    }, 0);
+                }
+            });
+        }
+
+        function getCookieBarFocusTarget() {
+            const candidates = [
+                document.querySelector('#header .main-bar-pc .main-nav-item-title'),
+                document.querySelector('#header .main-bar-mobile .icon-menu-hamburger'),
+                document.querySelector('#header button:not([disabled])'),
+                document.querySelector('#header a[href]'),
+                document.querySelector('.skip-to-main-content'),
+                lastFocusedElement
+            ];
+
+            return candidates.find((candidate) => {
+                if (!candidate || typeof candidate.focus !== 'function') {
+                    return false;
+                }
+                if (candidate.hasAttribute && candidate.hasAttribute('disabled')) {
+                    return false;
+                }
+                return true;
+            }) || null;
+        }
+
+        function restoreCookieBarFocus() {
+            nextTick(() => {
+                const focusTarget = getCookieBarFocusTarget();
+                if (focusTarget) {
+                    setTimeout(() => {
+                        const activeElement = document.activeElement;
+                        if (activeElement && activeElement !== focusTarget && typeof activeElement.blur === 'function') {
+                            activeElement.blur();
+                        }
+                        focusTarget.focus();
+                    }, 0);
+                }
+            });
+        }
+
+        // close button methods
+        function closeCookieBar(setCookieValue) {
+            if (rendertype.value == 'must-agree') {
+                if (setCookieValue) {
+                    agreeCookie.value = setCookieValue
+                }
+                createCookie(agreeCookieName, agreeCookie.value, "", cookieDomain);
+                customerCodeTrigger(agreeCookie.value)
+                document.body.style.overflow = 'unset';
+            } else {
+                if (getCookie(agreeCookieName) == "") {
+                    createCookie(agreeCookieName, "true", "", cookieDomain);
+                }
+            }
+            cookieSettingVisible.value = false;
+            lastCookieSettingTrigger = null;
+            cookieBarVisible.value = false;
+            nextTick(() => {
+                const switcher = document.querySelector('#locale-switcher');
+                const isSwitcherVisible = switcher && window.getComputedStyle(switcher).display !== 'none' && window.getComputedStyle(switcher).visibility !== 'hidden';
+                if (isSwitcherVisible) {
+                    const focusables = Array.from(switcher.querySelectorAll('[tabindex="0"], button:not([disabled]), a[href]'))
+                        .filter(function(el) {
+                            return el.offsetParent !== null;
+                        });
+                    if (focusables.length > 0) {
+                        const focusable = focusables[0];
+                        if (focusable && typeof focusable.focus === 'function') {
+                            setTimeout(() => {
+                                focusable.focus();
+                            }, 50);
+                            return;
+                        }
+                    }
+                }
+
+                const skipToMainContent = document.querySelector('.skip-to-main-content');
+                if (skipToMainContent && typeof skipToMainContent.focus === 'function') {
+                    setTimeout(() => {
+                        skipToMainContent.focus();
+                    }, 0);
+                    return;
+                }
+                restoreCookieBarFocus();
+            });
+        }
+
+        function handleCookieDialogKeydown(event) {
+            if (event.key !== 'Tab') {
+                return;
+            }
+
+            const dialog = document.querySelector('#cookie-bar-eu .cookie-bar-popup-container');
+            if (!dialog) {
+                return;
+            }
+
+            const focusables = Array.from(dialog.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+                .filter(function(el) {
+                    return el.offsetParent !== null;
+                });
+
+            if (!focusables.length) {
+                return;
+            }
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            const active = document.activeElement;
+
+            if (event.shiftKey && active === first) {
+                event.preventDefault();
+                last.focus();
+                return;
+            }
+
+            if (!event.shiftKey && active === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+
+        const functionalOptionStatus = ref(false);
+        const performanceOptionStatus = ref(false);
+        // cookie setting toggle option methods
+        function toggleFunctional() {
+            functionalOptionStatus.value = !functionalOptionStatus.value
+        }
+
+        // keep previous focus target and move initial focus to cookie bar container
+        watch(cookieBarVisible, (visible) => {
+            if (visible) {
+                const activeElement = document.activeElement;
+                if (activeElement && !activeElement.closest('#cookie-bar')) {
+                    lastFocusedElement = activeElement;
+                }
+                nextTick(() => {
+                    const container = document.querySelector('#cookie-bar-eu .cookie-bar-popup-container')
+                        || document.querySelector('#cookie-bar-non-eu')
+                        || document.querySelector('#cookie-bar');
+                    if (!container || typeof container.focus !== 'function') {
+                        return;
+                    }
+                    if (!container.hasAttribute('tabindex')) {
+                        container.setAttribute('tabindex', '-1');
+                    }
+                    container.focus();
+                });
+            } else {
+                cookieSettingVisible.value = false;
+                lastCookieSettingTrigger = null;
+            }
+        })
+        function togglePerformance() {
+            performanceOptionStatus.value = !performanceOptionStatus.value
+        }
+
+        watch([functionalOptionStatus, performanceOptionStatus], ([newFunctionalOptionStatus, newPerformanceOptionStatus]) => {
+            if (newFunctionalOptionStatus && newPerformanceOptionStatus) {
+                agreeCookie.value = 'true'
+            } else if (newFunctionalOptionStatus && !newPerformanceOptionStatus) {
+                agreeCookie.value = 'function'
+            } else if (!newFunctionalOptionStatus && newPerformanceOptionStatus) {
+                agreeCookie.value = 'analyze'
+            } else {
+                agreeCookie.value = 'basic'
+            }
+        })
+
+        // cookie methods
+        function getCookie(name) {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith(`${name}=`))
+            if (cookieValue) {
+                return decodeURIComponent(cookieValue.split('=')[1])
+            } else {
+                return ''
+            }
+        }
+
+        function createCookie(name, value, days, domain) {
+            var expires = "", specificDomain = ".benq.com";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            } else {
+                expires = "; expires=Wed, 31 Dec 2200 23:59:59 GMT"
+            }
+            if (domain) {
+                specificDomain = domain;
+            }
+            document.cookie = filterXSS(name + "=" + value + expires + "; domain=" + specificDomain + "; path=/");
+        }
+
+        function deleteCookie(cname, domain, path) {
+            document.cookie = cname + "=" +
+            ((path) ? ";path=" + path : "") +
+            ((domain) ? ";domain=" + filterXSS(domain) : "") +
+            ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        }
+
+        return {
+            mobile,
+            agreeCookie,
+            cookieSettingVisible,
+            cookieBarVisible,
+            rendertype,
+            openCookieSetting,
+            closeCookieSetting,
+            closeCookieBar,
+            functionalOptionStatus,
+            performanceOptionStatus,
+            toggleFunctional,
+            togglePerformance,
+            deleteCookie,
+            handleCookieDialogKeydown
+        }
+    }
+}
+).mount('#cookie-bar')

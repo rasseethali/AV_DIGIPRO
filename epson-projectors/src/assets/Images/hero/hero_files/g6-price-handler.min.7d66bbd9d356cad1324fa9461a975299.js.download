@@ -1,0 +1,76 @@
+
+function numberThousandsCommas(value) {
+    const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : ''
+    if(priceDecimalPoint === 'round'){
+        value = Math.round(parseFloat(value));
+    }
+
+    const enablePriceThousandSeparator = document.querySelector('input[name="enablePriceThousandSeparator"]') ? document.querySelector('input[name="enablePriceThousandSeparator"]').value : ''
+
+    if(value !== 0 && !value) return ''
+    if(enablePriceThousandSeparator === 'false' || !enablePriceThousandSeparator){
+        return value
+    }else{
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+}
+
+function numberDecimalPoint(value) {
+    const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : ''
+
+    if(value !== 0 && !value) return ''
+    if(!priceDecimalPoint){
+        return value
+    }else if(priceDecimalPoint === 'fixed2'){
+        const arrayNumber = value.toString().split(".");
+        if (arrayNumber.length == 1) {
+            return value.toString() + ".00";
+        }
+        if (arrayNumber.length > 1) {
+            if (arrayNumber[1].length < 2) {
+                return value.toString() + "0";
+            }
+            return value;
+        }
+    }else{
+        return value.toString().split('.')[0]
+    }
+}
+Vue.filter('numberThousandsCommas',function(value){
+    // (pre-process) mantis-65946 : change floor to round
+    const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : ''
+    if(priceDecimalPoint === 'round'){
+        value = Math.round(parseFloat(value));
+    }
+
+    const enablePriceThousandSeparator = document.querySelector('input[name="enablePriceThousandSeparator"]') ? document.querySelector('input[name="enablePriceThousandSeparator"]').value : ''
+
+    if(value !== 0 && !value) return ''
+    if(enablePriceThousandSeparator === 'false' || !enablePriceThousandSeparator){
+        return value
+    }else{
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+})
+
+Vue.filter('numberDecimalPoint',function(value){
+    const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : ''
+
+    if(value !== 0 && !value) return ''
+    if(!priceDecimalPoint){
+        return value
+    }else if(priceDecimalPoint === 'fixed2'){
+        const arrayNumber = value.toString().split(".");
+        if (arrayNumber.length == 1) {
+            return value.toString() + ".00";
+        }
+        if (arrayNumber.length > 1) {
+            if (arrayNumber[1].length < 2) {
+                return value.toString() + "0";
+            }
+            return value;
+        }
+    }else{
+        return value;
+    }
+})

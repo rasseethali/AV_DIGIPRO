@@ -1,0 +1,192 @@
+
+document.addEventListener('DOMContentLoaded', function () {
+    var getProductPrice = {
+        data() {
+            return {
+                queryMixedProductUrl: document.querySelector('input[name="queryMixedProductUrl"]')
+                    ? document.querySelector('input[name="queryMixedProductUrl"]').value
+                    : '',
+            };
+        },
+        methods: {
+            async getPrice(sku) {
+                return await queryProduct(sku, this.queryMixedProductUrl);
+            },
+        },
+    };
+    var minicart2 = {
+        mixins: [getProductPrice],
+        data() {
+            return {
+                // activeAddtoCart: 'false',
+                enableMemeberLogin: $('[name="enableMemeberLogin"]').val(),
+                storeId: $('[name="magentoStoreID"]').val(),
+                region: $('[name="magentoRegion"]').val(),
+                enableMagento: $('[id="enableMagento"]').val(),
+                currency: $('[name="currency"]').val(),
+                loginUrl: $('[name="loginUrl"]').val(),
+                logoutUrl: $('[name="logoutUrl"]').val(),
+                userAccountUrl: $('[name="userAccountUrl"]').val(),
+                trackOrderUrl: $('[name="trackOrderUrl"]').val(),
+                loginTrackOrderUrl: $('[name="loginTrackOrderUrl"]').val(),
+                checkoutLink: $('[name="checkoutLink"]').val(),
+                isLogin: false,
+                cartId: '',
+                cartItem: {},
+                cartTotal: { price: 0, length: 0 },
+                userName: '',
+                showCart: false,
+                cartBodyLockOwned: false,
+            };
+        },
+        async created() {
+            minicart.init().then(async () => {
+                this.isLogin = minicart.isLogin;
+                if (minicart.cartItem && minicart.cartItem.length > 0) {
+                    this.cartItem = minicart.cartItem;
+                }
+                if (minicart.cartTotal) {
+                    this.cartTotal = minicart.cartTotal;
+                }
+            });
+            window.minicart2 = this;
+        },
+        methods: {
+            shouldLockBodyForCart() {
+                return window.innerWidth < 1220;
+            },
+            syncCartBodyLock() {
+                const body = document.querySelector('body');
+                if (!body) {
+                    return;
+                }
+
+                const shouldLock = this.showCart === true && this.shouldLockBodyForCart();
+
+                if (shouldLock) {
+                    if (!body.classList.contains('fixed')) {
+                        body.classList.add('fixed');
+                        this.cartBodyLockOwned = true;
+                    }
+                    return;
+                }
+
+                if (this.cartBodyLockOwned) {
+                    body.classList.remove('fixed');
+                    this.cartBodyLockOwned = false;
+                }
+            },
+            openPopup() {
+                if (document.querySelector('.popupMessage')) {
+                    document.querySelector('.popupMessage').classList.add('show');
+                }
+            },
+            userLogin: function () {
+                memberClickDatalayer('sign in', this.loginUrl);
+                member.login();
+            },
+            async userLogout() {
+                memberClickDatalayer('sign out', this.logoutUrl);
+                member.logout();
+            },
+            async addToCart(addToCartItemData) {
+                let result = await minicart.addToCart(addToCartItemData);
+                if (result === 'success') {
+                    if (document.querySelector('.add-to-cart .loadingMotion')) {
+                        let loading = document.querySelector('.add-to-cart .loadingMotion');
+                        loading.classList.add('hide');
+                    }
+                    minicart.activeAddToCart = false;
+                    window.location.href = this.checkoutLink;
+                } else if (result === 'retry') {
+                    let newResult = await minicart.addToCart(addToCartItemData);
+                    if (newResult === 'success') {
+                        if (document.querySelector('.add-to-cart .loadingMotion')) {
+                            let loading = document.querySelector('.add-to-cart .loadingMotion');
+                            loading.classList.add('hide');
+                        }
+                        minicart.activeAddToCart = false;
+                        window.location.href = this.checkoutLink;
+                    }
+                } else if (result === 'The requested qty is not available') {
+                    this.openPopup();
+                    if (document.querySelector('.add-to-cart .loadingMotion')) {
+                        let loading = document.querySelector('.add-to-cart .loadingMotion');
+                        loading.classList.add('hide');
+                    }
+                    minicart.activeAddToCart = false;
+                } else {
+                    console.log(`add to cart failed`);
+                }
+            },
+            async deleteCartItem(item, itemId) {
+                await minicart.deleteCartItem(itemId).then(() => {
+                    // datalayer
+                    const datalayerDataArray = [];
+                    if (item.bundles) {
+                        item.bundles.forEach((bundle, index) => {
+                            datalayerDataArray.push({
+                                name: bundle.label || 'not_available',
+                                id: index === 0 ? item.sku || 'not_available' : bundle.sku || 'not_available',
+                                price: bundle.price !== undefined ? `${bundle.price}` : 'not_available',
+                                brand: 'BenQ',
+                                category: item.category || 'not_available',
+                                variant: bundle.variant || 'not_available',
+                                quantity: item.amount !== undefined ? `${item.amount}` : 'not_available',
+                            });
+                        });
+                    } else {
+                        const datalayerData = {
+                            name: item.dataLayerMainName ? item.dataLayerMainName : 'not_available',
+                            id: item.sku ? item.sku : 'not_available',
+                            price: item.price ? `${item.price}` : 'not_available',
+                            brand: 'BenQ',
+                            category: item.category ? item.category : 'not_available',
+                            variant: item.variant ? item.variant : 'not_available',
+                            quantity: `${item.amount}`,
+                        };
+                        datalayerDataArray.push(datalayerData);
+                    }
+                    removeFromCartDatalayer(`${item.totalPrice}`, datalayerDataArray);
+
+                    this.cartItem = minicart.cartItem;
+                    this.cartTotal = minicart.cartTotal;
+                });
+            },
+        },
+        watch: {
+            isLogin: {
+                async handler(newVal) {
+                    if (newVal == 'true') {
+                        this.userName = await member.getUserDetail();
+                    } else {
+                        this.userName = '';
+                    }
+                },
+            },
+            showCart: {
+                handler(newVal) {
+                    this.syncCartBodyLock();
+                },
+            },
+        },
+        mounted() {
+            this._onCartResize = this.syncCartBodyLock.bind(this);
+            window.addEventListener('resize', this._onCartResize);
+        },
+        beforeDestroy() {
+            if (this._onCartResize) {
+                window.removeEventListener('resize', this._onCartResize);
+            }
+            const body = document.querySelector('body');
+            if (body && this.cartBodyLockOwned) {
+                body.classList.remove('fixed');
+                this.cartBodyLockOwned = false;
+            }
+        },
+    };
+
+    window.getProductPrice = getProductPrice;
+    window.minicart2 = minicart2;
+});
+

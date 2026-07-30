@@ -1,0 +1,1274 @@
+function globalnavbarClickDatalayer(clickText, styleType, componentName, lowerTitle, ctaType, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(nextPageLocation !== 'n/a'){
+        nextPageLocation = nextPageLocation.replace('/content/b2c',window.location.origin)
+    }
+    window.dataLayer.push({
+        "event": "globalnavbar_click",
+        "site_category": siteCategory.toLowerCase(),
+        "style_type": styleType.toLowerCase(),
+        "component_name": componentName.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "cta_type": ctaType.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger globalnavbar click data layer, component: `, componentName)
+}
+
+function minicartClickDatalayer(lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "minicart_click",
+        "site_category": siteCategory.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger minicart click data layer`)
+}
+
+function memberClickDatalayer(clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "member_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger member click data layer`)
+}
+
+function sitesearchClickDatalayer(clickText,searchSuggestion) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(searchSuggestion){
+        window.dataLayer.push({
+            "event": "sitesearch_suggestion_click",
+            "site_category": siteCategory.toLowerCase(),
+            "search_text": clickText.toLowerCase(),
+            "search_suggestion": searchSuggestion.toLowerCase()
+        })
+    }else{
+        if(clickText === 'magnifier icon' || clickText === 'submit'){
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "click_text": clickText.toLowerCase(),
+            })
+        }else{
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "style_type": clickText.toLowerCase(),
+            })
+        }
+    }
+
+    console.info(`trigger sitesearch click data layer`)
+}
+
+function megamenuClickDatalayer(upperTitle, lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "megamenu_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "upper_title": upperTitle.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger megamenu click data layer`)
+}
+
+function removeFromCartDatalayer(totalPrice, datalayerDataArray) {
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    dataLayer.push({
+        event: 'removeFromCart',
+        ecommerce: {
+            'currencyCode': currencyCode,
+            'value': totalPrice,
+            'remove': {
+                'products': datalayerDataArray
+            }
+        }
+    });
+}
+window.addEventListener('DOMContentLoaded', function () {
+    Vue.directive("click-outside", {
+        bind(el, binding, vnode) {
+            el.clickOutsideEvent = (event) => {
+                if (!(el === event.target || el.contains(event.target))) {
+                    vnode.context[binding.expression](event);
+                }
+            };
+            document.body.addEventListener("click", el.clickOutsideEvent);
+        },
+        unbind(el) {
+            document.body.removeEventListener("click", el.clickOutsideEvent);
+        },
+    });
+    
+    var headerMixins = {
+        el: "#header",
+        data() {
+            return {
+                notificationShow: false,
+                showSearchInput: false,
+                searchInputPC: '',
+                searchInputMobile: '',
+                overlayNavShow: false,
+                megaMenuShow: false,
+                itemIndex: -1,
+                showSearchFieldPC: false,
+                showSearchFieldMobile: false,
+                cookieDomain: ((match = /(?:\.benq\.[^.\/]{1,3}\.[^.\/]{1,3}|\.benq\.[^.\/\:]{1,3}|\.benq\.[^.\/\:]{1,2})/i.exec(window.location.hostname)) !== null) ? match[0] : encodeURIComponent(window.location.hostname),
+                searchProject: document.getElementsByClassName('searchProject')[0] ? document.getElementsByClassName('searchProject')[0].value : '',
+                searchSite: document.getElementsByClassName('localePath')[0] ? document.getElementsByClassName('localePath')[0].value : '',
+                searchFilter: '',
+                searchUrl: '',
+                categories: [],
+                searchResult: [],
+                historyResult: [],
+                existSearchHistory: [],
+                searchForm: document.getElementById('search-form'),
+                extendMegaMenu: false,
+                stayExtendMegaMenu: false,
+                windowScrollTop:0,
+                windowHeight:0,
+                windowHeightGap:0,
+                showUserOption: false,
+            }
+        },
+        methods: {
+            XSSCheck(link){
+                return window.filterXSS(link);
+            },
+            disableTouchMove(){
+                document.addEventListener('touchstart', this.preventScroll,{passive: false});
+            },
+            enableTouchMove(){
+                document.removeEventListener('touchstart', this.preventScroll,{passive: false});
+            },
+            preventScroll(e){
+                if($(e.target).hasClass('overlay-bg')){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.closeOverlayNav()
+                return false;
+                }
+                if(!$(e.target).parents('.g6-local-navigation-component').length > 0 && !$(e.target).parents('#header').length > 0){
+                    e.preventDefault();
+                    e.stopPropagation();
+            
+                return false;
+                }
+
+            },
+            safariHacks() {
+                windowsVH = window.innerHeight / 100;
+                this.windowHeight = window.innerHeight
+                if(document.querySelector('.overlay-nav')){
+                    document.querySelector('.overlay-nav').style.setProperty('--vh', windowsVH + 'px');
+                }
+                if(document.querySelector('.mega-menu-show')){
+                    document.querySelector('.mega-menu-show').style.setProperty('--vh', windowsVH + 'px');
+                }
+                if(document.querySelector('.overlay-bg')){
+                    document.querySelector('.overlay-bg').style.setProperty('--vh', windowsVH + 'px');
+                }
+                if(document.querySelector('.cart-detail-container')){
+                    document.querySelector('.cart-detail-container').style.setProperty('--vh', windowsVH + 'px');
+                }
+                  window.addEventListener('resize', function() {
+                    windowsVH = window.innerHeight / 100;
+                    this.windowHeightGap = window.innerHeight - this.windowHeight
+                    this.windowHeight = window.innerHeight
+                    if(document.querySelector('.overlay-nav')){
+                        document.querySelector('.overlay-nav').style.setProperty('--vh', windowsVH + 'px');
+                    }
+                    if(document.querySelector('.mega-menu-show')){
+                        document.querySelector('.mega-menu-show').style.setProperty('--vh', windowsVH + 'px');
+                    }
+                    if(document.querySelector('.overlay-bg')){
+                        document.querySelector('.overlay-bg').style.setProperty('--vh', windowsVH + 'px');
+                    }
+                    if(document.querySelector('.cart-detail-container')){
+                        document.querySelector('.cart-detail-container').style.setProperty('--vh', windowsVH + 'px');
+                    }
+                  });
+            },
+            getCookie(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ')
+                        c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0)
+                        return filterXSS(c.substring(nameEQ.length, c.length), { stripIgnoreTag: true });
+                }
+                return "";
+            },
+            createCookie(name, value, days, domain) {
+                var expires = "", specificDomain = ".benq.com";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                } else {
+                    expires = "; expires=Wed, 31 Dec 2200 23:59:59 GMT"
+                }
+                if (domain) {
+                    specificDomain = domain;
+                }
+                document.cookie = filterXSS(name + "=" + value + expires + "; domain=" + specificDomain + "; path=/");
+            },
+            globalnavbarDatalayerTrigger(event,styleType,componentName,lowerTitle,clickText,ctaType,isMainNav){
+                if(isMainNav){
+                    clickText = clickText ? clickText : event.currentTarget.parentElement.querySelector('.main-nav-item-title').textContent
+                }else{
+                    clickText = clickText ? clickText : event.currentTarget.textContent
+                }
+                if(componentName == 'globalnotificationbar'){
+                    lowerTitle = event.currentTarget.previousElementSibling.textContent
+                }
+
+                const nextPageLocation = event.currentTarget.href ? event.currentTarget.href : 'n/a'
+                globalnavbarClickDatalayer(clickText,styleType,componentName,lowerTitle,ctaType,nextPageLocation)
+            },
+            minicartDatalayerTrigger(lowerTitle,clickText,nextPageLocation){
+                minicartClickDatalayer(lowerTitle,clickText,nextPageLocation);
+            },
+            memberDatalayerTrigger(clickText,nextPageLocation){
+                memberClickDatalayer(clickText,nextPageLocation);
+            },
+            megamenuDatalayerTrigger(event,isAll){
+                const isasideAreaLink = event.currentTarget.classList.contains('aside-area-link');
+                const clickText = event.currentTarget.textContent;
+                const nextPageLocation = event.currentTarget.href;
+                let lowerTitle = isasideAreaLink || isAll || !event.currentTarget.parentElement.querySelector('p.segment-title').textContent ? 'n/a' : event.currentTarget.parentElement.querySelector('p.segment-title').textContent;
+                let upperTitle = $(event.currentTarget).parents('.main-nav-item').children('p').text() ? $(event.currentTarget).parents('.main-nav-item').children('p').text() : $(event.currentTarget).parents('.main-nav-item').children('a').text() ? $(event.currentTarget).parents('.main-nav-item').children('a').text() : 'n/a'
+                if(window.innerWidth < 1220){
+                    upperTitle = $(event.currentTarget).parents('.mega-menu').prev('p.main-nav-item').text()
+                    upperTitle = upperTitle ? upperTitle : 'n/a'
+                }
+                console.log(clickText,nextPageLocation,lowerTitle,upperTitle)
+                megamenuClickDatalayer(upperTitle,lowerTitle,clickText,nextPageLocation);
+            },
+            closeNotification() {
+                this.notificationShow = false;
+                this.createCookie("global_notification", "true", "", this.cookieDomain);
+            },
+            getMainContentTarget() {
+                return document.getElementById('main-content')
+                    || document.querySelector('main[role="main"]')
+                    || document.querySelector('main')
+                    || document.querySelector('[role="main"]')
+                    || document.querySelector('.g6-site');
+            },
+            ensureMainContentTarget() {
+                const target = this.getMainContentTarget();
+                if (target && !target.id) {
+                    target.id = 'main-content';
+                }
+            },
+            skipToMainContent() {
+                this.ensureMainContentTarget();
+                const target = this.getMainContentTarget();
+                if (!target) {
+                    return;
+                }
+
+                if (!target.id) {
+                    target.id = 'main-content';
+                }
+                if (!target.hasAttribute('tabindex')) {
+                    target.setAttribute('tabindex', '-1');
+                }
+
+                setTimeout(function() {
+                    if (typeof target.focus === 'function') {
+                        target.focus();
+                    }
+                    if (typeof target.scrollIntoView === 'function') {
+                        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }
+                }, 0);
+            },
+            showSearch(e) {
+                let menu_item_active = document.querySelector('.main-bar-pc .main-nav-item.active');
+                let drop_bg_overlay = document.querySelector('.drop_bg_overlay.active');
+                let drop_bg = document.querySelector('.drop_bg.active');
+                if(menu_item_active){
+                    menu_item_active.classList.remove('active')
+                }
+                if(drop_bg_overlay){
+                    drop_bg_overlay.classList.remove('active')
+                }
+                if(drop_bg){
+                    drop_bg.classList.remove('active')
+                    drop_bg.style.paddingBottom = '0px';
+                }
+                
+                // datalayer
+                sitesearchClickDatalayer('magnifier icon')
+                this.showSearchInput = true;
+                this.$nextTick(function(){
+                    e.currentTarget.parentElement.querySelector('.search .search-form-pc .search-input').focus();
+                })
+            },
+            closeSearch() {
+                this.showSearchInput = false;
+                this.searchInputPC = '';
+            },
+            focusFirstCartItem(trigger) {
+                this.$nextTick(() => {
+                    const cartDetail = document.querySelector('#g6-desktop-cart-detail') || document.querySelector('#g6-mobile-cart-detail');
+                    if (!cartDetail) {
+                        return;
+                    }
+
+                    const firstFocusable = cartDetail.querySelector('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                    if (firstFocusable && typeof firstFocusable.focus === 'function') {
+                        firstFocusable.focus();
+                    } else if (trigger && typeof trigger.focus === 'function') {
+                        trigger.focus();
+                    }
+                });
+            },
+            toggleCartByKeyboard(event) {
+                const trigger = event && event.currentTarget ? event.currentTarget : null;
+                this.showCart = !this.showCart;
+                if (this.showCart) {
+                    this.focusFirstCartItem(trigger);
+                } else if (trigger && typeof trigger.focus === 'function') {
+                    this.$nextTick(() => {
+                        trigger.focus();
+                    });
+                }
+            },
+            closeCartByKeyboard(event) {
+                this.showCart = false;
+                const trigger = event && event.currentTarget ? event.currentTarget : null;
+                if (trigger && typeof trigger.focus === 'function') {
+                    this.$nextTick(() => {
+                        trigger.focus();
+                    });
+                }
+            },
+            handleCartFocusOut(event) {
+                const nextTarget = event && event.relatedTarget ? event.relatedTarget : null;
+                const currentTarget = event && event.currentTarget ? event.currentTarget : null;
+                if (currentTarget && nextTarget && currentTarget.contains(nextTarget)) {
+                    return;
+                }
+                this.showCart = false;
+            },
+            showOverlayNav() {
+                this.windowScrollTop = window.pageYOffset + this.windowHeightGap
+                document.body.classList.add('fixed');
+                const localNavigation = document.querySelector('.g6-local-navigation-component')
+                if(localNavigation){
+                    if(!localNavigation.classList.contains('active')){
+                        document.body.style.top = `-${this.windowScrollTop}px`;
+                    }
+                }else{
+                    document.body.style.top = `-${this.windowScrollTop}px`;
+                }
+                this.overlayNavShow = true;
+                const mobileTrigger = document.querySelector('.main-bar-mobile .icon-menu-hamburger');
+                const mobileOverlay = document.querySelector('.main-bar-mobile .overlay-nav');
+                if (mobileTrigger) {
+                    mobileTrigger.setAttribute('aria-expanded', 'true');
+                }
+                if (mobileOverlay) {
+                    mobileOverlay.setAttribute('aria-hidden', 'false');
+                    setTimeout(function() {
+                        const firstFocusable = mobileOverlay.querySelector('.icon-nav-close, .nav-content .main-nav-item, .nav-content .main-nav-item-mobile-toggle, a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                        if (firstFocusable && typeof firstFocusable.focus === 'function') {
+                            firstFocusable.focus();
+                        }
+                    }, 80);
+                }
+                this.disableTouchMove()
+            },
+            closeOverlayNav() {
+                const localNavigation = document.querySelector('.g6-local-navigation-component')
+                if(localNavigation){
+                    if(!localNavigation.classList.contains('active')){
+                        document.body.classList.remove('fixed');
+                        window.scrollTo({
+                            top: this.windowScrollTop + this.windowHeightGap,
+                        });
+                    }
+                }else{
+                    document.body.classList.remove('fixed');
+                        window.scrollTo({
+                            top: this.windowScrollTop + this.windowHeightGap,
+                        });
+                }
+                this.overlayNavShow = false;
+                const mobileTrigger = document.querySelector('.main-bar-mobile .icon-menu-hamburger');
+                const mobileOverlay = document.querySelector('.main-bar-mobile .overlay-nav');
+                if (mobileTrigger) {
+                    mobileTrigger.setAttribute('aria-expanded', 'false');
+                    if (typeof mobileTrigger.focus === 'function') {
+                        mobileTrigger.focus();
+                    }
+                }
+                if (mobileOverlay) {
+                    mobileOverlay.setAttribute('aria-hidden', 'true');
+                }
+                this.enableTouchMove()
+            },
+            showMegaMenu(i) {
+                let tempEle = i.target.nextElementSibling;
+                tempEle.classList.add("mega-menu-show");
+                this.megaMenuShow = true;
+            },
+            closeMegaMenu() {
+                test = document.querySelector(".nav-content .mega-menu.mega-menu-show");
+                test.classList.remove("mega-menu-show");
+                this.megaMenuShow = false;
+            },
+            onClickOutside() {
+                this.showSearchFieldPC = false;
+            },
+            handleSearchFocusOut(event) {
+                try {
+                    const searchContainer = event && event.currentTarget ? event.currentTarget : null;
+                    if (!searchContainer) {
+                        return;
+                    }
+
+                    const nextFocused = event && event.relatedTarget ? event.relatedTarget : null;
+                    if (nextFocused && searchContainer.contains(nextFocused)) {
+                        return;
+                    }
+
+                    setTimeout(() => {
+                        const active = document.activeElement;
+                        if (!active || !searchContainer.contains(active)) {
+                            this.closeSearch();
+                        }
+                    }, 0);
+                } catch (e) {
+                    /* ignore */
+                }
+            },
+            clearSearchFieldContentPC() {
+                this.historyResult = [];
+                cookiebar.deleteCookie("benq_search_result", this.cookieDomain, "/");
+            },
+            clearSearchFieldContentMobile() {
+                this.historyResult = [];
+                cookiebar.deleteCookie("benq_search_result", this.cookieDomain, "/");
+            },
+            cancelSearch() {
+                this.showSearchFieldMobile = false;
+                this.searchInputMobile = '';
+            },
+            searchKeyWord(inputValue) {
+                let vm = this;
+                vm.searchFilter = vm.searchSite ? "&filter=project eq '" + vm.searchProject + "'" + " and site eq '" + vm.searchSite + "'" : "&filter=project eq '" + vm.searchProject + "'";
+                vm.searchUrl = '/api/azure/searchIndex?count=true&suggesterName=suggester&fuzzy=true&top=20&action=suggest&select=category,subCategory,path,title&search=' + inputValue + vm.searchFilter;
+                
+                axios.get(vm.searchUrl).then(res => {
+                    if (res.status == 200) {
+                        vm.searchResult = [];
+                        const categories = res.data.value.map(function(item) {
+                            return item.category;
+                        }).filter(function(item, index, self) {
+                            return self.indexOf(item) === index;
+                        });
+                        vm.categories = categories.map(category=>{
+                            let catrgoryI18n = category
+                            let weight = 0;
+                            switch (category){
+                                case 'Service':
+                                    catrgoryI18n = document.querySelector('.service-i18n').value
+                                    weight = 5
+                                    break;
+                                case 'Product':
+                                    catrgoryI18n = document.querySelector('.product-i18n').value
+                                    weight = 6
+                                    break;
+                                case 'News':
+                                    catrgoryI18n = document.querySelector('.news-i18n').value
+                                    weight = 2
+                                    break;
+                                case 'Knowledge':
+                                    catrgoryI18n = document.querySelector('.knowledge-i18n').value
+                                    weight = 3
+                                    break;
+                                case 'FAQ':
+                                    catrgoryI18n = document.querySelector('.faq-i18n').value
+                                    weight = 4
+                                    break;
+                                case 'Download':
+                                    catrgoryI18n = document.querySelector('.download-i18n').value
+                                    weight = 1
+                                    break;
+                                default:
+                                    break;
+                            }
+                            return {category,catrgoryI18n,weight}
+                        })
+
+
+                        vm.categories.sort((a,b)=> b.weight - a.weight)
+                        
+                        vm.categories.forEach((category, i) => {
+                            let itemList = [];
+                            res.data.value.forEach(item => {
+                                if (item.category == 'Product' && item.subCategory == 'Download') {
+                                    return;
+                                }
+                                if (item.category === category.category) {
+                                    itemList.push([item['title'], `${item.path}.html`]);
+                                    vm.searchResult.push()
+                                }
+                            });
+                            vm.searchResult.push([category.catrgoryI18n,category.category, itemList]);
+                        });
+
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    return;
+                });
+
+                vm.showSearchFieldPC = true;
+            },
+            debounce(fn, delay = 500) {
+                let timer;
+                return (...args) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        fn(...args);
+                    }, delay);
+                };
+            },
+            debounceSearch: (function() {
+                let debouncedCallAPI;
+                return function(...args) {
+                    if (!debouncedCallAPI) {
+                        debouncedCallAPI = this.debounce(this.searchKeyWord);
+                    }
+                    debouncedCallAPI(...args);
+                };
+            })(),
+            searchKeyWordPC() {
+                this.debounceSearch(this.searchInputPC);
+            },
+            searchKeyWordMobile() {
+                this.debounceSearch(this.searchInputMobile);
+            },
+            checkHistory() {
+                let vm = this;
+                vm.existSearchHistory = decodeURIComponent(vm.getCookie('benq_search_result'));
+                let search_value = vm.searchInputPC;
+
+                if (!vm.existSearchHistory && search_value!=="") {
+                    let value_array = [search_value];
+                    vm.createCookie("benq_search_result", JSON.stringify(value_array), "", vm.cookieDomain);
+                } else if (vm.existSearchHistory && search_value!=="" ) {
+                    let value_array = JSON.parse(vm.getCookie('benq_search_result'));
+                    value_array = value_array.filter(function(item) {
+                        return item != search_value
+                    });
+                    if (value_array.length === 5) {
+                        value_array.shift();
+                    }
+                    value_array.push(search_value);
+                    vm.createCookie('benq_search_result', JSON.stringify(value_array), '', vm.cookieDomain);
+                }
+            },
+            triggerSearchDatalayer(text,suggestion){
+                sitesearchClickDatalayer(text,suggestion)
+            },
+            searchHistory(history) {
+                sitesearchClickDatalayer(history)
+                location.href = `${this.searchForm.getAttribute('action')}?q=${history}`;
+            },
+            showHistory() {
+                this.checkHistory();
+
+                this.historyResult = [];
+                if(this.existSearchHistory.length > 0) {
+                    JSON.parse(this.existSearchHistory).reverse().forEach(item => {
+                        this.historyResult.push(item);
+                    });
+                }
+            },
+            isFocusPC() {
+                this.showSearchFieldPC = true;
+                this.showHistory();
+            },
+            isFocusMobile() {
+                this.showSearchFieldMobile = true;
+                this.showHistory();
+            },
+            onSubmitPC() {
+                this.checkHistory();
+                // datalayer
+                sitesearchClickDatalayer('submit')
+                location.href = `${this.searchForm.getAttribute('action')}?q=${this.searchInputPC}`;
+            },
+            onSubmitMobile() {
+                this.checkHistory();
+                // datalayer
+                sitesearchClickDatalayer('submit')
+                location.href = `${this.searchForm.getAttribute('action')}?q=${this.searchInputMobile}`;
+            },
+            toggleUserOption(){
+                this.showUserOption = !this.showUserOption;
+            },
+            closeUserOption(restoreFocus){
+                this.showUserOption = false;
+                if(!restoreFocus){
+                    return;
+                }
+                this.$nextTick(() => {
+                    try{
+                        const trigger = this.$el.querySelector('.icon-user');
+                        if(trigger && typeof trigger.focus === 'function'){
+                            trigger.focus();
+                        }
+                    }catch(e){/* ignore */}
+                });
+            },
+            closeUserOptionWithoutFocus(){
+                this.closeUserOption(false);
+            },
+            handleUserMenuFocusOut(event){
+                try{
+                    const userContainer = this.$el.querySelector('.subnav-container .right .icon-user');
+                    if(!userContainer){
+                        return;
+                    }
+
+                    const nextFocused = event && event.relatedTarget ? event.relatedTarget : null;
+                    if(nextFocused && userContainer.contains(nextFocused)){
+                        return;
+                    }
+
+                    setTimeout(() => {
+                        const active = document.activeElement;
+                        if(!active || !userContainer.contains(active)){
+                            this.closeUserOption(false);
+                        }
+                    }, 0);
+                }catch(e){/* ignore */}
+            },
+        },
+        watch: {
+            searchInputPC(value) {
+                value ? this.showSearchFieldPC = true : this.showSearchFieldPC = false;
+                this.debounceSearch(value);
+            },
+            searchInputMobile(value) {
+                value ? this.showSearchFieldMobile = true : '';
+                this.debounceSearch(value);
+            },
+        },
+        created() {
+            /**
+             * Check Global Notification Cookie
+             */
+            let checkCookie = this.getCookie("global_notification");
+            checkCookie !== "" ? this.notificationShow = false : this.notificationShow = true;
+        },
+        mounted(){
+            this.safariHacks()
+            this.ensureMainContentTarget()
+        }
+    };
+    window.headerMixins = headerMixins;
+    
+    let isG6 = document.getElementById('isG6').value;
+    if(isG6 == 'true') {
+        new Vue({
+            mixins:[headerMixins, minicart2],
+        });
+        pc_drop_menu();
+        mobile_overlay_nav_a11y();
+    } else {
+        new Vue({
+            mixins:[headerMixins],
+        });
+        pc_drop_menu();
+        mobile_overlay_nav_a11y();
+    }
+});
+
+let pc_drop_menu = function(){
+    let menu_item = document.querySelectorAll('.main-bar-pc .main-nav-item');
+    let drop_bg_overlay = document.querySelector('.drop_bg_overlay');
+    let drop_bg = document.querySelector('.drop_bg');
+    const mainBarPc = document.querySelector('.main-bar-pc');
+    const header = document.querySelector('#header');
+    const mainNav = document.querySelector('.main-bar-pc .main-nav');
+
+    if (!mainNav || !mainBarPc || !header || !drop_bg_overlay || !drop_bg) {
+        return;
+    }
+
+    mainNav.setAttribute('role', 'menubar');
+
+    const getTitleTrigger = function(item) {
+        return item.querySelector('.main-nav-item-title');
+    };
+
+    const getToggleButton = function(item) {
+        return item.querySelector('.main-nav-item-toggle');
+    };
+
+    const getSubmenu = function(item) {
+        return item.querySelector('.main-nav-content-container');
+    };
+
+    const getFocusableTopLevel = function() {
+        return Array.from(mainNav.querySelectorAll('.main-nav-item-title, .main-nav-item-toggle, .main-nav-item > a.main-nav-item:not(.main-nav-item-title), .main-nav-item > a:not(.main-nav-item-title)'))
+            .filter(function(el) {
+                return el && !el.hasAttribute('disabled') && el.offsetParent !== null;
+            });
+    };
+
+    const syncAriaState = function(item, isExpanded) {
+        const submenu = getSubmenu(item);
+        const titleTrigger = getTitleTrigger(item);
+        const toggleButton = getToggleButton(item);
+
+        if (submenu) {
+            submenu.setAttribute('aria-hidden', isExpanded ? 'false' : 'true');
+        }
+        if (titleTrigger) {
+            titleTrigger.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        }
+        if (toggleButton) {
+            toggleButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        }
+    };
+
+    const setSubmenuFocusable = function(item, enabled) {
+        const submenu = getSubmenu(item);
+        if (!submenu) {
+            return;
+        }
+
+        const focusables = submenu.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]');
+        focusables.forEach(function(el) {
+            if (!el.hasAttribute('data-g6-orig-tabindex')) {
+                if (el.hasAttribute('tabindex')) {
+                    el.setAttribute('data-g6-orig-tabindex', el.getAttribute('tabindex'));
+                } else {
+                    el.setAttribute('data-g6-orig-tabindex', '__none__');
+                }
+            }
+
+            if (enabled) {
+                const original = el.getAttribute('data-g6-orig-tabindex');
+                if (original === '__none__') {
+                    el.removeAttribute('tabindex');
+                } else if (original !== null) {
+                    el.setAttribute('tabindex', original);
+                }
+            } else {
+                el.setAttribute('tabindex', '-1');
+            }
+        });
+    };
+
+    const closeAllMenus = function() {
+        menu_item.forEach(function(item) {
+            item.classList.remove('active');
+            item.classList.remove('keyboard-open');
+            syncAriaState(item, false);
+            setSubmenuFocusable(item, false);
+        });
+        header.classList.remove('active');
+        drop_bg_overlay.classList.remove('active');
+        drop_bg.style.paddingBottom = '0px';
+        drop_bg.classList.remove('active');
+    };
+
+    const openMenu = function(item, allowSubmenuFocus) {
+        const submenu = getSubmenu(item);
+        if (!submenu) {
+            closeAllMenus();
+            return;
+        }
+
+        const activeItem = document.querySelector('.main-bar-pc .main-nav-item.active');
+        if (activeItem && activeItem !== item) {
+            activeItem.classList.remove('active');
+            syncAriaState(activeItem, false);
+            setSubmenuFocusable(activeItem, false);
+        }
+
+        item.classList.add('active');
+        if (allowSubmenuFocus) {
+            item.classList.add('keyboard-open');
+        } else {
+            item.classList.remove('keyboard-open');
+        }
+        syncAriaState(item, true);
+        setSubmenuFocusable(item, !!allowSubmenuFocus);
+        header.classList.add('active');
+        drop_bg_overlay.classList.add('active');
+        drop_bg.style.paddingBottom = submenu.offsetHeight + 'px';
+        drop_bg.classList.add('active');
+    };
+
+    const focusFirstSubmenuItem = function(item) {
+        const submenu = getSubmenu(item);
+        if (!submenu) {
+            return;
+        }
+        const firstFocusable = submenu.querySelector('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+        if (firstFocusable && typeof firstFocusable.focus === 'function') {
+            firstFocusable.focus();
+        }
+    };
+
+    const handleTopLevelArrowNav = function(currentElement, direction) {
+        const focusable = getFocusableTopLevel();
+        const currentIndex = focusable.indexOf(currentElement);
+        if (currentIndex === -1 || focusable.length === 0) {
+            return;
+        }
+        const nextIndex = (currentIndex + direction + focusable.length) % focusable.length;
+        focusable[nextIndex].focus();
+    };
+
+    menu_item.forEach(function(item, index) {
+        const submenu = getSubmenu(item);
+        const titleTrigger = getTitleTrigger(item);
+
+        if (titleTrigger) {
+            titleTrigger.setAttribute('role', 'menuitem');
+        }
+
+        if (!submenu || !titleTrigger) {
+            return;
+        }
+
+        const text = titleTrigger.textContent ? titleTrigger.textContent.trim() : 'Menu';
+        const submenuId = 'g6-main-nav-panel-' + index;
+
+        submenu.id = submenuId;
+        submenu.setAttribute('aria-label', text + ' submenu');
+        submenu.setAttribute('aria-hidden', 'true');
+
+        titleTrigger.setAttribute('aria-haspopup', 'true');
+        titleTrigger.setAttribute('aria-controls', submenuId);
+        titleTrigger.setAttribute('aria-expanded', 'false');
+
+        if (titleTrigger.tagName.toLowerCase() !== 'a') {
+            titleTrigger.setAttribute('tabindex', '0');
+        }
+
+        if (!getToggleButton(item)) {
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'main-nav-item-toggle';
+            toggle.setAttribute('aria-label', text + ' menu');
+            toggle.setAttribute('aria-controls', submenuId);
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.innerHTML = '<svg class="main-nav-item-toggle-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use xlink:href="#i-expand"></use></svg>';
+            titleTrigger.insertAdjacentElement('afterend', toggle);
+        }
+
+        const toggleButton = getToggleButton(item);
+
+        // Keep original mouse behavior: hovering top-level items shows the panel.
+        item.addEventListener('mouseover', function() {
+            openMenu(item, false);
+        });
+
+        titleTrigger.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                openMenu(item, true);
+                focusFirstSubmenuItem(item);
+            } else if (event.key === ' ') {
+                event.preventDefault();
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, 1);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, -1);
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, 1);
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, -1);
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                closeAllMenus();
+                event.currentTarget.focus();
+            }
+        });
+
+        toggleButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (item.classList.contains('keyboard-open')) {
+                closeAllMenus();
+                titleTrigger.focus();
+            } else {
+                openMenu(item, true);
+                focusFirstSubmenuItem(item);
+            }
+        });
+
+        toggleButton.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, 1);
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, -1);
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, 1);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                handleTopLevelArrowNav(event.currentTarget, -1);
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                closeAllMenus();
+                titleTrigger.focus();
+            }
+        });
+
+        // Keep submenu out of tab order until user explicitly enters it with Enter/toggle.
+        setSubmenuFocusable(item, false);
+    });
+
+    mainNav.addEventListener('keydown', function(event) {
+        const focusable = getFocusableTopLevel();
+        const activeElement = document.activeElement;
+        if (focusable.indexOf(activeElement) === -1) {
+            return;
+        }
+
+        if (event.key === 'Home') {
+            event.preventDefault();
+            focusable[0].focus();
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            focusable[focusable.length - 1].focus();
+        }
+    });
+
+    mainBarPc.addEventListener('focusout', function(event) {
+        const nextFocused = event && event.relatedTarget ? event.relatedTarget : null;
+        if (nextFocused && mainBarPc.contains(nextFocused)) {
+            const activeItem = document.querySelector('.main-bar-pc .main-nav-item.active');
+            if (activeItem && !activeItem.contains(nextFocused)) {
+                closeAllMenus();
+            }
+            return;
+        }
+
+        setTimeout(function() {
+            const activeElement = document.activeElement;
+            if (!activeElement || !mainBarPc.contains(activeElement)) {
+                closeAllMenus();
+            }
+        }, 0);
+    });
+
+    // Ensure keyboard tabbing out of an opened menu always closes it,
+    // even when focusout.relatedTarget is missing or unreliable.
+    document.addEventListener('focusin', function(event) {
+        const activeItem = document.querySelector('.main-bar-pc .main-nav-item.active');
+        if (!activeItem) {
+            return;
+        }
+
+        const target = event && event.target ? event.target : null;
+        if (!target) {
+            closeAllMenus();
+            return;
+        }
+
+        if (!activeItem.contains(target)) {
+            closeAllMenus();
+        }
+    });
+
+    mainBarPc.addEventListener('mouseleave', function() {
+        closeAllMenus();
+    });
+
+    drop_bg_overlay.addEventListener('click', function() {
+        closeAllMenus();
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const openItem = document.querySelector('.main-bar-pc .main-nav-item.active');
+            const activeElement = document.activeElement;
+            const shouldRestoreFocus = !!(openItem && activeElement && openItem.contains(activeElement));
+            closeAllMenus();
+            if (shouldRestoreFocus && openItem) {
+                const trigger = getTitleTrigger(openItem) || getToggleButton(openItem);
+                if (trigger && typeof trigger.focus === 'function') {
+                    trigger.focus();
+                }
+            }
+        }
+    });
+}
+
+let mobile_overlay_nav_a11y = function() {
+    const mobileBar = document.querySelector('.main-bar-mobile');
+    if (!mobileBar) {
+        return;
+    }
+
+    const overlayNav = mobileBar.querySelector('.overlay-nav');
+    const hamburgerTrigger = mobileBar.querySelector('.icon-menu-hamburger');
+    const closeIcon = mobileBar.querySelector('.overlay-nav .icon-nav-close');
+    const navContent = mobileBar.querySelector('.overlay-nav .nav-content');
+
+    if (!overlayNav || !hamburgerTrigger || !navContent) {
+        return;
+    }
+
+    const focusableSelector = '.nav-content .main-nav-item, .nav-content .main-nav-item-mobile-toggle, .nav-content a.main-nav-item';
+
+    const getTopLevelItems = function() {
+        return Array.from(mobileBar.querySelectorAll(focusableSelector)).filter(function(el) {
+            return el && el.offsetParent !== null;
+        });
+    };
+
+    const openTriggerByKeyboard = function(trigger) {
+        if (!trigger) {
+            return;
+        }
+        trigger.click();
+        setTimeout(function() {
+            const panel = trigger.nextElementSibling;
+            if (panel && panel.classList.contains('mega-menu')) {
+                const firstPanelFocusable = panel.querySelector('.icon-nav-back, a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                if (firstPanelFocusable && typeof firstPanelFocusable.focus === 'function') {
+                    firstPanelFocusable.focus();
+                }
+            }
+        }, 80);
+    };
+
+    const syncMobileSubmenuAria = function() {
+        const triggers = Array.from(navContent.querySelectorAll('.main-nav-item.has-submenu'));
+        triggers.forEach(function(trigger) {
+            const panel = trigger.nextElementSibling;
+            const isOpen = !!(panel && panel.classList.contains('mega-menu-show'));
+            const toggle = trigger.querySelector('.main-nav-item-mobile-toggle');
+            trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
+            if (panel) {
+                panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            }
+        });
+    };
+
+    hamburgerTrigger.setAttribute('role', 'button');
+    hamburgerTrigger.setAttribute('tabindex', '0');
+    hamburgerTrigger.setAttribute('aria-label', 'Open menu');
+    hamburgerTrigger.setAttribute('aria-controls', 'g6-mobile-global-nav');
+    hamburgerTrigger.setAttribute('aria-expanded', 'false');
+    hamburgerTrigger.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            hamburgerTrigger.click();
+        }
+    });
+
+    overlayNav.setAttribute('id', 'g6-mobile-global-nav');
+    overlayNav.setAttribute('role', 'navigation');
+    overlayNav.setAttribute('aria-label', 'Global mobile');
+    overlayNav.setAttribute('aria-hidden', 'true');
+
+    if (closeIcon) {
+        closeIcon.setAttribute('role', 'button');
+        closeIcon.setAttribute('tabindex', '0');
+        closeIcon.setAttribute('aria-label', 'Close menu');
+        closeIcon.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                closeIcon.click();
+            }
+        });
+    }
+
+    const submenuTriggers = Array.from(navContent.querySelectorAll('.main-nav-item')).filter(function(item) {
+        return item.nextElementSibling && item.nextElementSibling.classList.contains('mega-menu');
+    });
+
+    submenuTriggers.forEach(function(trigger, index) {
+        const panel = trigger.nextElementSibling;
+        const panelId = 'g6-mobile-submenu-' + index;
+        const labelText = trigger.textContent ? trigger.textContent.trim() : 'Menu';
+
+        trigger.classList.add('has-submenu');
+        trigger.setAttribute('role', 'button');
+        trigger.setAttribute('tabindex', '0');
+        trigger.setAttribute('aria-haspopup', 'true');
+        trigger.setAttribute('aria-controls', panelId);
+        trigger.setAttribute('aria-expanded', 'false');
+
+        panel.setAttribute('id', panelId);
+        panel.setAttribute('aria-hidden', 'true');
+        panel.setAttribute('aria-label', labelText + ' submenu');
+
+        if (!trigger.querySelector('.main-nav-item-mobile-toggle')) {
+            const toggleButton = document.createElement('button');
+            toggleButton.type = 'button';
+            toggleButton.className = 'main-nav-item-mobile-toggle';
+            toggleButton.setAttribute('aria-label', labelText + ' menu');
+            toggleButton.setAttribute('aria-controls', panelId);
+            toggleButton.setAttribute('aria-expanded', 'false');
+            trigger.appendChild(toggleButton);
+
+            toggleButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                openTriggerByKeyboard(trigger);
+            });
+
+            toggleButton.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    openTriggerByKeyboard(trigger);
+                }
+            });
+        }
+
+        trigger.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                openTriggerByKeyboard(trigger);
+            } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                const items = getTopLevelItems();
+                const currentIndex = items.indexOf(trigger);
+                if (currentIndex === -1 || items.length === 0) {
+                    return;
+                }
+                const direction = event.key === 'ArrowDown' ? 1 : -1;
+                const nextIndex = (currentIndex + direction + items.length) % items.length;
+                items[nextIndex].focus();
+            }
+        });
+
+        const backIcon = panel.querySelector('.icon-nav-back');
+        if (backIcon) {
+            backIcon.setAttribute('role', 'button');
+            backIcon.setAttribute('tabindex', '0');
+            backIcon.setAttribute('aria-label', 'Back to menu');
+            backIcon.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    backIcon.click();
+                    setTimeout(function() {
+                        trigger.focus();
+                    }, 20);
+                }
+            });
+        }
+    });
+
+    overlayNav.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            const activeSubmenuBack = overlayNav.querySelector('.mega-menu-show .icon-nav-back');
+            if (activeSubmenuBack) {
+                activeSubmenuBack.click();
+                setTimeout(function() {
+                    const trigger = navContent.querySelector('.main-nav-item.has-submenu[aria-expanded="true"]') || navContent.querySelector('.main-nav-item.has-submenu');
+                    if (trigger && typeof trigger.focus === 'function') {
+                        trigger.focus();
+                    }
+                }, 20);
+            } else if (closeIcon) {
+                closeIcon.click();
+            }
+        }
+    });
+
+    const observer = new MutationObserver(function() {
+        syncMobileSubmenuAria();
+    });
+
+    observer.observe(navContent, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['class']
+    });
+
+    syncMobileSubmenuAria();
+}
+
+// for edu component datalayer
+const dataLayerStyleType = {
+    link : "link",
+    icon : "icon",
+    btn : "btn",
+    image : "image",
+    checkbox : "checkbox"
+};
+window.addEventListener('DOMContentLoaded', (event) => {
+    let local_language = document.querySelector("input.localePath").value;
+    let s_url= location.origin;
+    let s_target=`${s_url}/${local_language}/search-result.html?q={search_term_string}`
+    const domainEnd = location.hostname;
+
+    let schema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "BenQ",
+        "url": s_url,
+        "alternateName": ["BENQ", domainEnd],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": s_target
+          },
+          "query-input": "required name=search_term_string"
+        }
+    }
+
+    let script = document.createElement('script');
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(schema);
+    document.head.appendChild(script);
+});
+

@@ -1,0 +1,88 @@
+.g6-article-list-component{width:100%}
+@media(max-width:767px){.g6-article-list-component{padding:0 20px}
+}
+.g6-article-list-component .g6-article-list-component-container{max-width:100%;width:100%;margin:auto;text-align:center}
+@media(min-width:768px) and (max-width:1632px){.g6-article-list-component .g6-article-list-component-container{overflow:hidden}
+}
+.g6-article-list-component .g6-article-list-component-container .title-container{max-width:1220px;margin:0 auto 44px}
+@media(max-width:767px){.g6-article-list-component .g6-article-list-component-container .title-container{margin:0 auto 32px}
+}
+.g6-article-list-component .g6-article-list-component-container .title-container .g6-title-md{font-family:'Poppins';line-height:84px;height:84px;overflow:hidden}
+@media(max-width:1220px){.g6-article-list-component .g6-article-list-component-container .title-container .g6-title-md{max-width:728px;margin:auto}
+}
+@media(max-width:767px){.g6-article-list-component .g6-article-list-component-container .title-container .g6-title-md{max-width:unset;line-height:42px;height:42px}
+}
+.g6-article-list-component .g6-article-list-component-container .title-container .button{display:block;margin:44px 0 0;font-family:'Roboto';font-weight:500;font-size:16px;line-height:19px;max-width:100%}
+@media(max-width:767px){.g6-article-list-component .g6-article-list-component-container .title-container .button{margin:32px 0 0}
+}
+@media(min-width:768px) and (max-width:1632px){.g6-article-list-component .swiper{padding-left:calc((100% - 1220px) / 2);padding-right:20px}
+}
+.g6-article-list-component .swiper .swiper-wrapper{justify-content:center;height:auto;gap:16px;padding:10px}
+@media(max-width:767px){.g6-article-list-component .swiper .swiper-wrapper{flex-direction:column;gap:16px 0;padding:0 !important}
+}
+.g6-article-list-component .swiper .swiper-button-next::after,.g6-article-list-component .swiper .swiper-button-prev::after{display:none}
+.g6-article-list-component .swiper .swiper-button-prev,.g6-article-list-component .swiper .swiper-button-next{display:none;width:60px;height:60px;position:absolute;transform:translateX(-50%);bottom:0;top:unset}
+.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg{fill:#fff}
+.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg circle,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg circle,.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg path,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg path{stroke:#757575}
+.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg:hover,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg:hover{fill:#f2f2f2}
+.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg:focus circle,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg:focus circle,.g6-article-list-component .swiper .swiper-button-prev:not(.swiper-button-disabled) svg:focus path,.g6-article-list-component .swiper .swiper-button-next:not(.swiper-button-disabled) svg:focus path{stroke:#ccc}
+.g6-article-list-component .swiper .swiper-button-prev{left:calc(50% + 20px - 60px)}
+.g6-article-list-component .swiper .swiper-button-next{left:calc(50% - 20px + 60px)}
+.g6-article-list-component .swiper .swiper-button-disabled svg{fill:#fff}
+.g6-article-list-component .swiper .swiper-button-disabled svg circle,.g6-article-list-component .swiper .swiper-button-disabled svg path{stroke:#ccc}
+.g6-article-list-component .list-container{position:relative;z-index:1;justify-content:center;align-items:stretch}
+.g6-article-list-component .list-container:not(.slick-initialized){display:flex}
+@media(max-width:1220px){.g6-article-list-component .list-container:not(.slick-initialized){overflow:hidden}
+}
+@media(max-width:767px){.g6-article-list-component .list-container:not(.slick-initialized){overflow:unset}
+}
+@media(min-width:768px) and (max-width:1632px){.g6-article-list-component .list-container .slick-list{overflow:visible !important}
+}
+@media(max-width:1220px){.g6-article-list-component .list-container{justify-content:flex-start;padding-bottom:92px;padding-top:10px}
+}
+@media(max-width:767px){.g6-article-list-component .list-container{justify-content:center;flex-direction:column;gap:16px 0;padding-bottom:0 !important}
+.g6-article-list-component .list-container .swiper-wrapper div{margin-left:0 !important}
+}
+@media screen and (max-width:1632px){.g6-article-list-component .list-container.list-4{justify-content:flex-start;padding-bottom:92px}
+}
+@media screen and (max-width:1632px) and (max-width:767px){.g6-article-list-component .list-container.list-4{justify-content:center}
+}
+@media(max-width:767px){.g6-article-list-component .list-container.list-4 .swiper-wrapper div{margin-left:0 !important}
+}
+.g6-article-list-component .list-container .card{display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;width:396px;text-decoration:none;transition:.3s;border-radius:32px;cursor:pointer;margin:0 !important}
+@media(max-width:1220px){.g6-article-list-component .list-container .card{transition:none;margin:0 !important}
+}
+@media(max-width:767px){.g6-article-list-component .list-container .card{height:auto;width:100%;border-radius:12px;margin:0 !important}
+}
+.g6-article-list-component .list-container .card.white{background-color:#fff}
+.g6-article-list-component .list-container .card.black{background-color:#1a1a1c}
+.g6-article-list-component .list-container .card:hover{transform:scale(1.04)}
+@media(max-width:767px){.g6-article-list-component .list-container .card:hover{transform:none}
+}
+.g6-article-list-component .list-container .card .item-image-container{display:flex;align-items:center;height:220px;width:100%;overflow:hidden}
+@media(max-width:767px){.g6-article-list-component .list-container .card .item-image-container{height:186px}
+}
+.g6-article-list-component .list-container .card .item-image-container img{width:100%;height:auto}
+.g6-article-list-component .list-container .card .item-text-container{flex-grow:1;height:auto;min-height:151px;max-height:280px;overflow:hidden;width:100%;padding:24px;text-align:left;display:flex;flex-direction:column;gap:16px;justify-content:space-between}
+.g6-article-list-component .list-container .card .item-text-container p.g6-subtitle-md{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+.g6-article-list-component .list-container .card .item-text-container .item-button-container{display:flex;justify-content:flex-start;width:auto}
+.g6-article-list-component .list-container .card .item-text-container .item-button-container a{font-family:'Roboto';font-weight:500;font-size:16px;line-height:19px;margin:0}
+.g6-article-list-component .slider-container{display:none;height:60px;width:100%;justify-content:center;align-items:center;margin-top:32px}
+@media(max-width:1220px){.g6-article-list-component .slider-container{display:flex;gap:20px}
+}
+@media(max-width:767px){.g6-article-list-component .slider-container{display:none}
+}
+.g6-article-list-component .slider-container .slider-left,.g6-article-list-component .slider-container .slider-right{height:60px;width:60px}
+.g6-article-list-component .slider-container .slider-left svg circle,.g6-article-list-component .slider-container .slider-right svg circle,.g6-article-list-component .slider-container .slider-left svg path,.g6-article-list-component .slider-container .slider-right svg path{stroke:#ccc}
+.g6-article-list-component .slider-container .slider-left.active svg circle,.g6-article-list-component .slider-container .slider-right.active svg circle,.g6-article-list-component .slider-container .slider-left.active svg path,.g6-article-list-component .slider-container .slider-right.active svg path{stroke:#757575}
+.g6-article-list-component.darkMode{background-color:#000}
+.g6-article-list-component.darkMode .title-container .title{color:#fff}
+.g6-article-list-component.darkMode .title-container .button{color:#b27aff !important}
+.g6-article-list-component.darkMode .title-container .button::after{content:url('../../../../../etc/designs/g6/clientlib-site/img/g6/right-arrow-dark.svg')}
+.g6-article-list-component.darkMode .slick-arrow:not(.slick-disabled){fill:unset}
+.g6-article-list-component.darkMode .slick-arrow:not(.slick-disabled):hover{fill:#333}
+.g6-article-list-component.darkMode .slick-arrow:not(.slick-disabled):active{fill:unset}
+.g6-article-list-component.darkMode .slick-arrow:not(.slick-disabled):active circle,.g6-article-list-component.darkMode .slick-arrow:not(.slick-disabled):active path{stroke:#ccc}
+.g6-article-list-component.darkMode .slick-arrow circle,.g6-article-list-component.darkMode .slick-arrow path{stroke:#757575}
+.g6-article-list-component.darkMode .slick-arrow.slick-disabled{fill:unset;opacity:.5}
+.ar-me .swiper-button-prev,.locale-ar-me .swiper-button-prev{right:calc(50% + 20px - 40px)}

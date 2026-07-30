@@ -1,0 +1,117 @@
+if (mediaType == 'video') {
+    Vue.config.devtool = true
+    initAutoLoop(el)
+}
+
+function columnBannnercompareImages(imageContainer) {
+    let clicked = 0;
+    let sliderPositionPercent = '50%';
+    let imageContainerWidth = imageContainer.offsetWidth;
+    let imageContainerHeigth = imageContainer.offsetHeight;
+    let image = imageContainer.querySelector('.img-comp-overlay');
+    image.style.clipPath = `inset(0px 0px 0px 50%)`
+
+    let slider = imageContainer.querySelector('.slider');
+
+    slider.style.top = (imageContainerHeigth / 2) + "px";
+    slider.style.left = (imageContainerWidth / 2) + "px";
+
+    slider.addEventListener("mousedown", slideReady);
+
+    window.addEventListener("mouseup", slideFinish);
+
+    slider.addEventListener("touchstart", slideReady);
+
+    window.addEventListener("touchend", slideFinish);
+    window.addEventListener("resize", slideRefresh);
+
+    function slideReady(e) {
+        e.preventDefault();
+
+        clicked = 1;
+        window.addEventListener("mousemove", slideMove);
+        window.addEventListener("touchmove", slideMove);
+    }
+    function slideFinish() {
+
+        clicked = 0;
+    }
+    function slideMove(e) {
+        var pos;
+
+        if (clicked == 0) return false;
+
+        pos = getCursorPos(e)
+
+        if (pos < 0) pos = 0;
+        if (pos > imageContainerWidth) pos = imageContainerWidth;
+        slide(pos / imageContainerWidth * 100);
+    }
+    function getCursorPos(e) {
+        var a, x = 0;
+        e = (e.changedTouches) ? e.changedTouches[0] : e;
+
+        a = image.getBoundingClientRect();
+
+        x = e.pageX - a.left;
+
+        x = x - window.pageXOffset;
+        return x;
+    }
+    function slide(x) {
+        sliderPositionPercent = `${x}%`
+        image.style.clipPath = `inset(0px 0px 0px ${sliderPositionPercent})`
+        slider.style.left = `${sliderPositionPercent}`;
+    }
+    function slideRefresh() {
+        imageContainerWidth = imageContainer.offsetWidth;
+        imageContainerHeigth = imageContainer.offsetHeight;
+        image.style.clipPath = `inset(0px 0px 0px ${sliderPositionPercent})`
+        slider.style.left = `${sliderPositionPercent}`;
+        slider.style.top = (imageContainerHeigth / 2) + "px";
+    }
+}
+window.addEventListener("load", function (event) {
+    let imageContainer = document.querySelectorAll(".g6-column-banner-component .columnBannnerCompare");
+    Array.from(imageContainer).forEach((element) => {
+        columnBannnercompareImages(element);
+    })
+})
+
+window.addEventListener('DOMContentLoaded', function () {
+    // Add datalayer click event for column banner image compare slider
+    const compareSliders = document.querySelectorAll('.columnBannnerCompare .slider');
+
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (compareSliders.length > 0) {
+        compareSliders.forEach((slider) => {
+            slider.addEventListener('click', function (event) {
+                event.stopImmediatePropagation();
+
+                const columnBannerComponent = slider.closest('.g6-column-banner-component');
+                let lowerTitle = 'n/a';
+                if (columnBannerComponent) {
+                    const titleEl = columnBannerComponent.querySelector('.g6-text-title');
+                    if (titleEl && titleEl.textContent) {
+                        lowerTitle = titleEl.textContent.trim().toLowerCase();
+                    }
+                }
+                if (!window.dataLayer) {
+                    window.dataLayer = [];
+                }
+                window.dataLayer.push({
+                    event: 'banner_click',
+                    site_category: siteCategory,
+                    style_type: 'btn',
+                    component_name: 'columnbanner',
+                    lower_title: lowerTitle,
+                    click_text: 'imagecompare',
+                    cta_type: 'other',
+                    next_page_location: 'n/a',
+                });
+                console.info('trigger column banner image compare datalayer');
+            });
+        });
+    }
+});
+

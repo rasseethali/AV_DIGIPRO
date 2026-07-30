@@ -1,0 +1,95 @@
+window.addEventListener('load', function () {
+    function extendClickDatalayer(componentName, lowerTitle) {
+        const siteCategory = document.querySelector('.searchProject').value;
+        if (!window.dataLayer) {
+            window.dataLayer = [];
+        }
+        window.dataLayer.push({
+            event: 'extend_click',
+            site_category: siteCategory.toLowerCase(),
+            style_type: 'btn',
+            component_name: componentName.toLowerCase(),
+            lower_title: lowerTitle.toLowerCase(),
+        });
+    }
+
+    document.querySelectorAll('.g6-accordion-component').forEach((accordionComponent) => {
+        const mainTitleToggle = accordionComponent.querySelector(
+            '.accordion-main-title-list[data-accordion-toggle-all]'
+        );
+        const accordionItem = accordionComponent.querySelectorAll('.accordion-item');
+        const mainToggleButton = accordionComponent.querySelectorAll('.accordion-main-title-list .toggle-button');
+
+        function syncMainTitleState() {
+            if (mainTitleToggle) {
+                const isAllOpen = Array.from(accordionItem).every((item) => item.classList.contains('open'));
+                const isAllClosed = Array.from(accordionItem).every((item) => !item.classList.contains('open'));
+
+                if (isAllOpen) {
+                    mainTitleToggle.classList.add('open');
+                } else if (isAllClosed) {
+                    mainTitleToggle.classList.remove('open');
+                }
+            }
+        }
+
+        // Main title 點擊事件
+        if (mainTitleToggle && mainToggleButton.length > 0) {
+            mainTitleToggle.addEventListener('click', function () {
+                const shouldOpen = !mainTitleToggle.classList.contains('open');
+
+                Array.from(accordionItem).forEach((item) => {
+                    item.classList.toggle('open', shouldOpen);
+                });
+
+                mainTitleToggle.classList.toggle('open');
+            });
+        }
+
+        // 個別 item 的點擊事件
+        Array.from(accordionItem).forEach((item) => {
+            const toggleButton = item.querySelector('.accordion-title-container');
+
+            toggleButton.addEventListener('click', function (event) {
+                const lowerTitle = event.currentTarget.querySelector('.accordion-title').innerText;
+                if (!item.classList.contains('open')) {
+                    extendClickDatalayer('accordion', lowerTitle);
+                }
+                item.classList.toggle('open');
+
+                syncMainTitleState();
+            });
+        });
+
+        syncMainTitleState();
+    });
+
+    // 結構化資料 FAQPage
+    const faqItems = [];
+    document.querySelectorAll('.accordion-item').forEach((item) => {
+        const question = item.querySelector('.accordion-title');
+        const answer = item.querySelector('.accordion-description');
+        if (question && answer) {
+            faqItems.push({
+                '@type': 'Question',
+                name: question.innerText.trim(),
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: answer.innerText.trim(),
+                },
+            });
+        }
+    });
+
+    if (faqItems.length > 0) {
+        const faqJsonLd = {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqItems,
+        };
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(faqJsonLd, null, 2);
+        document.head.appendChild(script);
+    }
+});

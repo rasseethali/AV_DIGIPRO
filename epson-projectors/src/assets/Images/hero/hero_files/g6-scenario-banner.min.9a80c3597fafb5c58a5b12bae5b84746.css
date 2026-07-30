@@ -1,0 +1,232 @@
+.g6-scenario-banner-component{width:100%;max-width:2560px;height:auto;max-height:1440px;margin:0 auto;position:relative;overflow:hidden}
+.g6-scenario-banner-component.mask-center{height:100vh}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper{max-height:100%;height:100%}
+.g6-scenario-banner-component.mask-center.edit{height:100%}
+.g6-scenario-banner-component.mask-center.edit .scenario-banner-component-wrapper{max-height:100%}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center.edit .scenario-banner-component-wrapper .scenario-banner-bg-img img{height:100%}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center.edit .scenario-banner-component-wrapper .scenario-banner-bg-vid video{height:100%}
+}
+.g6-scenario-banner-component.mask-center.edit .scenario-banner-content{top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center}
+.g6-scenario-banner-component.edit:not(.mask-center) .scenario-banner-component-wrapper .scenario-banner-bg-vid video{max-height:100%}
+.g6-scenario-banner-component:not(.mask-center){background-repeat:no-repeat;background-position:center}
+.g6-scenario-banner-component:not(.mask-center) .scenario-banner-component-wrapper .scenario-banner-bg-img img{width:100%;height:auto;display:block}
+.g6-scenario-banner-component:not(.mask-center) .scenario-banner-component-wrapper .scenario-banner-bg-vid video{object-fit:cover;min-width:100%;margin:0 auto;width:100%}
+@media(max-width:1220px){.g6-scenario-banner-component:not(.mask-center) .scenario-banner-content .scenario-banner-mask{background-color:transparent !important}
+}
+@media(min-width:1221px){.g6-scenario-banner-component:not(.mask-center) .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-subtitle{max-height:90px;white-space:normal}
+}
+.g6-scenario-banner-component.mask-center:not(.enable-motion) .scenario-banner-content{transform:translate(-50%,-50%);top:50%;display:flex;align-items:center;justify-content:center}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper{overflow:hidden;display:flex;align-items:center;justify-content:center;max-height:100vh}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper .scenario-banner-bg-img img{object-fit:cover;height:100vh;width:100vw;max-height:1440px;max-width:2560px}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper .scenario-banner-bg-vid{display:flex;align-items:center}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper .scenario-banner-bg-vid video{object-fit:cover;width:100vw;margin:0 auto;height:100vh}
+.g6-scenario-banner-component.mask-center .scenario-banner-component-wrapper .scenario-banner-bg-animation{height:100vh;width:100vw}
+.g6-scenario-banner-component .scenario-banner-content{position:absolute;width:50%;height:100%}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content{display:grid}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component{align-self:center;height:auto}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component{background-color:transparent !important}
+}
+@media(max-width:1220px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component{padding:0}
+}
+@media(max-width:767px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component{padding-left:20px;padding-right:20px}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap{height:auto}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-title{max-height:unset}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-title{max-height:344px}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-subtitle{max-height:unset}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-subtitle{max-height:90px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-subtitle{white-space:normal}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-tag{max-height:unset}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-tag{max-height:24px}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-desc{max-height:unset}
+@media(min-width:1221px){.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-desc{max-height:216px}
+}
+.g6-scenario-banner-component .scenario-banner-content .g6-text-component .g6-text-content-wrap .g6-text-btn{margin-bottom:0}
+.g6-scenario-banner-component .scenario-banner-content .scenario-banner-mask.white85{background-color:rgba(255,255,255,0.85)}
+.g6-scenario-banner-component .scenario-banner-content .scenario-banner-mask.white60{background-color:rgba(255,255,255,0.6)}
+.g6-scenario-banner-component .scenario-banner-content .scenario-banner-mask.black85{background-color:rgba(0,0,0,0.85)}
+.g6-scenario-banner-component .scenario-banner-content .scenario-banner-mask.black60{background-color:rgba(0,0,0,0.6)}
+.g6-scenario-banner-component .scenario-banner-content .scenario-banner-mask.none{background-color:transparent}
+.g6-scenario-banner-component.mask-right .scenario-banner-content{top:0;right:0}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content{position:relative;width:100%}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-right .scenario-banner-content[class*='g6-bg-']{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask{display:flex;align-items:center}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask{margin:0 auto}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask.white90,.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask.white60,.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask.black90,.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask.black60,.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask.none{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;max-width:530px;margin:0 80px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:728px;width:100vw;margin:40px auto 80px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;margin:20px auto 40px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:728px}
+}
+@media screen and (max-width:768px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:100%}
+}
+.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{height:auto}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{text-align:center;align-items:center !important}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:72px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:unset}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-icon-wrap{justify-content:flex-start}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-right .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-content-wrap{text-align:left;align-items:flex-start}
+}
+.g6-scenario-banner-component.mask-left .scenario-banner-content{top:0;left:0;float:right}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content{position:relative;width:100%}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-left .scenario-banner-content[class*='g6-bg-']{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask{display:flex;align-items:center}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask{margin:0 auto}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask.white90,.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask.white60,.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask.black90,.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask.black60,.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask.none{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;max-width:530px;margin:0 80px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:728px;width:100vw;margin:40px auto 80px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;margin:20px auto 40px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:728px}
+}
+@media screen and (max-width:768px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:100%}
+}
+.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{height:auto}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{text-align:center;align-items:center !important}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:72px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:unset}
+}
+.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask{flex-direction:row-reverse}
+.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component{justify-self:end}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-icon-wrap{justify-content:flex-start}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-left .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-content-wrap{text-align:left;align-items:flex-start}
+}
+.g6-scenario-banner-component.mask-top .scenario-banner-content{top:0;top:60px;width:100%;height:unset}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content{position:relative;width:100%}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-top .scenario-banner-content[class*='g6-bg-']{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask{display:flex;align-items:center}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask{margin:0 auto}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask.white90,.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask.white60,.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask.black90,.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask.black60,.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask.none{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;max-width:530px;margin:0 80px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:728px;width:100vw;margin:40px auto 80px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;margin:20px auto 40px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:728px}
+}
+@media screen and (max-width:768px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:100%}
+}
+.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{height:auto}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{text-align:center;align-items:center !important}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:72px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:unset}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-top .scenario-banner-content{top:0}
+}
+.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask{flex-direction:row-reverse;justify-content:center}
+.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{justify-self:end}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:1220px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100vw}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{max-height:594px}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-top .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-content-wrap{text-align:center}
+}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content{top:0;top:unset;bottom:60px;width:100%;height:unset}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content{position:relative;width:100%}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content[class*='g6-bg-']{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask{display:flex;align-items:center}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask{margin:0 auto}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask.white90,.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask.white60,.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask.black90,.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask.black60,.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask.none{background-color:transparent}
+}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;max-width:530px;margin:0 80px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:728px;width:100vw;margin:40px auto 80px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100%;margin:20px auto 40px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:728px}
+}
+@media screen and (max-width:768px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{width:100%}
+}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{height:auto}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap{text-align:center;align-items:center !important}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:72px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-content-wrap .g6-text-note{max-height:unset}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content{top:0}
+}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask{flex-direction:row-reverse;justify-content:center}
+.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{justify-self:end}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{max-width:1220px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component{width:100vw}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{max-height:594px}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-bottom .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-content-wrap{text-align:center}
+}
+.g6-scenario-banner-component.mask-center .scenario-banner-content{transform:translate(-50%,0);top:100%;left:50%;max-height:668px;min-height:216px;height:auto;width:1220px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content{width:100%;max-height:100%;padding:0 80px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-center .scenario-banner-content{padding:0 20px}
+}
+.g6-scenario-banner-component.mask-center .scenario-banner-content[class*='g6-bg-']{z-index:1;background-color:transparent}
+.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask{display:flex;padding:40px 160px;border-radius:32px}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask{padding:0;border-radius:24px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask{border-radius:12px;width:100%}
+}
+.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component{margin:0 auto;width:840px;background-color:transparent !important}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component{width:auto;padding:110px}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component{padding:40px 20px;width:100%}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap{padding:0}
+}
+@media(min-width:1221px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-note{max-height:54px}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content .scenario-banner-mask .g6-text-component .g6-text-wrap .g6-text-note{max-height:unset}
+}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-center .scenario-banner-content .stillText .g6-text-content-wrap-mobile .g6-text-link span{max-width:calc(100vw - 400px)}
+}
+@media(max-width:767px){.g6-scenario-banner-component.mask-center .scenario-banner-content .stillText .g6-text-content-wrap-mobile .g6-text-link span{max-width:calc(100vw - 100px)}
+}
+.g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap-pc .g6-text-link{max-width:100%}
+.g6-scenario-banner-component.mask-left .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display,.g6-scenario-banner-component.mask-right .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display{justify-content:flex-start}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display,.g6-scenario-banner-component.mask-right .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display{justify-content:center}
+}
+.g6-scenario-banner-component.mask-left .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display .g6-text-link,.g6-scenario-banner-component.mask-right .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display .g6-text-link{justify-content:flex-start}
+@media(max-width:1220px){.g6-scenario-banner-component.mask-left .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display .g6-text-link,.g6-scenario-banner-component.mask-right .g6-text-component .g6-text-wrap .g6-text-content-wrap .button-display .g6-text-link{justify-content:center}
+}
+@media(max-width:1220px){.hidden-xs{display:none}
+}
+@media(min-width:1221px){.visible-xs{display:none}
+}
+.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-tag,.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-subtitle,.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-title,.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-desc,.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-btn,.g6-recommendation-questions .g6-scenario-banner-component:not(.mask-center) .g6-text-content-wrap .g6-text-link{opacity:0}
+.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-tag,.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-subtitle,.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-title,.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-desc,.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-btn,.g6-recommendation-questions .g6-scenario-banner-component.edit .g6-text-content-wrap .g6-text-link{opacity:1}
