@@ -20,6 +20,7 @@ transporter.verify((error) => {
     console.log("❌ SMTP ERROR:", error.message);
   } else {
     console.log("✅ SMTP READY");
+    console.log(process.env);
   }
 });
 
@@ -125,18 +126,17 @@ console.log("MAIL_TO:", process.env.MAIL_TO);
     });
 
 
-  } catch (error) {
+  } } catch (error) {
+  console.error("❌ Mail Error:", error);
+  console.error("Message:", error.message);
+  console.error("Code:", error.code);
+  console.error("Response:", error.response);
 
-    console.log("❌ Mail Error:", error.message);
+  return res.status(500).json({
+    success: false,
+    message: error.message,
+  });
 
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to send enquiry.",
-      error: error.message,
-    });
-
-  }
 };
 
 
