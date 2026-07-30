@@ -1,10 +1,13 @@
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+// SMTP Transport
 const nodemailer = require("nodemailer");
 
-// SMTP Transport
 const transporter = nodemailer.createTransport({
-  host: "gmail",
-  port: 465,
-  secure: true,
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -37,8 +40,8 @@ const sendEnquiry = async (req, res) => {
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
+       from: process.env.EMAIL_USER,     // Your Gmail
+  to: process.env.MAIL_TO,              // Recipient's email address
       replyTo: email,
       subject: "📩 New AV DIGIPRO Enquiry",
       html: `
