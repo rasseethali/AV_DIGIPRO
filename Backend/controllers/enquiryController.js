@@ -65,7 +65,7 @@ Message: ${message}
   `,
     };
   const transporter = nodemailer.createTransport({
-  host: "gmail",
+   service: "gmail",
   port: 587,
   secure: false,
   requireTLS: true,
