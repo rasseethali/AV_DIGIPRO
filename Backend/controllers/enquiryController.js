@@ -127,9 +127,9 @@ await transporter.sendMail(ownerMail);
 console.log("✅ Owner Mail Sent");
 
 // Temporary disable this
-// console.log("➡️ Sending User Mail...");
-// await transporter.sendMail(userMail);
-// console.log("✅ User Mail Sent");
+console.log("➡️ Sending User Mail...");
+await transporter.sendMail(userMail);
+console.log("✅ User Mail Sent");
 
   
 
