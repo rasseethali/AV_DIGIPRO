@@ -43,7 +43,7 @@ const sendEnquiry = async (req, res) => {
       message,
     } = req.body;
 
-  
+
     // Validation
     if (!name || !phone || !email || !state || !language || !message) {
       return res.status(400).json({
@@ -122,16 +122,16 @@ const sendEnquiry = async (req, res) => {
       </div>
       `,
     };
+    console.log("➡️ Sending Owner Mail...");
+await transporter.sendMail(ownerMail);
+console.log("✅ Owner Mail Sent");
 
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+// Temporary disable this
+// console.log("➡️ Sending User Mail...");
+// await transporter.sendMail(userMail);
+// console.log("✅ User Mail Sent");
 
-    // Send Both Mails
-    await transporter.sendMail(ownerMail);
-    await transporter.sendMail(userMail);
-
-    console.log("✅ Owner Mail Sent");
-    console.log("✅ User Confirmation Mail Sent");
+  
 
     return res.status(200).json({
       success: true,
