@@ -4,28 +4,24 @@ const dns = require("dns");
 dns.setDefaultResultOrder("ipv4first");
 
 // SMTP Transport
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 30000, // 30 seconds
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-});
-
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
+// await transporter.sendMail(ownerMail);
 // Verify SMTP Connection
-transporter.verify((error) => {
-  if (error) {
-    console.log("❌ SMTP ERROR:", error.message);
-  } else {
-    console.log("✅ SMTP READY");
-  }
-});
+// transporter.verify((error) => {
+//   if (error) {
+//     console.log("❌ SMTP ERROR:", error.message);
+//   } else {
+//     console.log("✅ SMTP READY");
+//   }
+// });
 
 
 // Send Enquiry Controller
@@ -68,6 +64,23 @@ Language: ${language}
 Message: ${message}
   `,
     };
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+
+    console.log("➡️ Sending Owner Mail...");
+
+    await transporter.sendMail(ownerMail);
+
+    console.log("✅ Owner Mail Sent");
+
 
     // ===========================
     // 2. USER CONFIRMATION MAIL
