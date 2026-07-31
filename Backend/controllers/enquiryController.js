@@ -64,23 +64,18 @@ Language: ${language}
 Message: ${message}
   `,
     };
-  const transporter = nodemailer.createTransport({
-   service: "gmail",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
     console.log("➡️ Sending Owner Mail...");
 
     await transporter.sendMail(ownerMail);
 
     console.log("✅ Owner Mail Sent");
-
 
     // ===========================
     // 2. USER CONFIRMATION MAIL
@@ -129,9 +124,7 @@ Message: ${message}
       </div>
       `,
     };
-    console.log("➡️ Sending Owner Mail...");
-    await transporter.sendMail(ownerMail);
-    console.log("✅ Owner Mail Sent");
+
 
     // Temporary disable this
     console.log("➡️ Sending User Mail...");
