@@ -1,0 +1,471 @@
+function globalnavbarClickDatalayer(clickText, styleType, componentName, lowerTitle, ctaType, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(nextPageLocation !== 'n/a'){
+        nextPageLocation = nextPageLocation.replace('/content/b2c',window.location.origin)
+    }
+    window.dataLayer.push({
+        "event": "globalnavbar_click",
+        "site_category": siteCategory.toLowerCase(),
+        "style_type": styleType.toLowerCase(),
+        "component_name": componentName.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "cta_type": ctaType.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger globalnavbar click data layer, component: `, componentName)
+}
+
+function minicartClickDatalayer(lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "minicart_click",
+        "site_category": siteCategory.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger minicart click data layer`)
+}
+
+function memberClickDatalayer(clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "member_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger member click data layer`)
+}
+
+function sitesearchClickDatalayer(clickText,searchSuggestion) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    if(searchSuggestion){
+        window.dataLayer.push({
+            "event": "sitesearch_suggestion_click",
+            "site_category": siteCategory.toLowerCase(),
+            "search_text": clickText.toLowerCase(),
+            "search_suggestion": searchSuggestion.toLowerCase()
+        })
+    }else{
+        if(clickText === 'magnifier icon' || clickText === 'submit'){
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "click_text": clickText.toLowerCase(),
+            })
+        }else{
+            window.dataLayer.push({
+                "event": "sitesearch_click",
+                "site_category": siteCategory.toLowerCase(),
+                "style_type": clickText.toLowerCase(),
+            })
+        }
+    }
+
+    console.info(`trigger sitesearch click data layer`)
+}
+
+function megamenuClickDatalayer(upperTitle, lowerTitle, clickText, nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "megamenu_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "upper_title": upperTitle.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase()
+    })
+    console.info(`trigger megamenu click data layer`)
+}
+
+function removeFromCartDatalayer(totalPrice, datalayerDataArray) {
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    dataLayer.push({
+        event: 'removeFromCart',
+        ecommerce: {
+            'currencyCode': currencyCode,
+            'value': totalPrice,
+            'remove': {
+                'products': datalayerDataArray
+            }
+        }
+    });
+}
+window.addEventListener('DOMContentLoaded',function(){
+    Vue.config.devtool = true;
+    let component = document.querySelector('.g6-local-navigation-component');
+       let elementId=component.id;
+       let tab = component.querySelectorAll('.right-container > li a')
+       new Vue({
+           el:`#${elementId}`,
+           data(){
+               return{
+                   dropdownStatus:false,
+                   selectedTab:0,
+                   selectedCompareGrid:false,
+                   selectedFaq:false,
+                   fixedComponent:false,
+                   pageType:document.querySelector('.pageType').value,
+                   windowHeight:0,
+                   windowHeightGap:0,
+                   windowScrollTop:0,
+                   skucode: document.querySelector('input[name="sku"]') ? document.querySelector('input[name="sku"]').value.trim() : '',
+                   ecType: document.querySelector('input[name="ecType"]') ? document.querySelector('input[name="ecType"]').value : '',
+                   enableMagentoBuyButton: document.querySelector('input[name="enableMagentoBuyButton"]') ? document.querySelector('input[name="enableMagentoBuyButton"]').value : '',
+                   memberCenterRegion: document.querySelector('input[name="memberCenterRegion"]') ? document.querySelector('input[name="memberCenterRegion"]').value : '',
+                   magentoStoreID: document.querySelector('input[name="magentoStoreID"]') ? document.querySelector('input[name="magentoStoreID"]').value : '',
+                   queryMixedProductUrl: document.querySelector('input[name="queryMixedProductUrl"]') ? document.querySelector('input[name="queryMixedProductUrl"]').value : '',
+                   productCondition: document.querySelector('input[name="productCondition"]') ? document.querySelector('input[name="productCondition"]').value : '',
+                   newProductPrice: document.querySelector('input[name="newProductPrice"]') ? Number(document.querySelector('input[name="newProductPrice"]').value) : '',
+                   disableMagentoECStandardPrice: document.querySelector('input[name="disableMagentoECStandardPrice"]') ? document.querySelector('input[name="disableMagentoECStandardPrice"]').value : '',
+                   discontinuedStandardPrice: document.querySelector('input[name="discontinuedStandardPrice"]') ? document.querySelector('input[name="discontinuedStandardPrice"]').value : '',
+                   megentoData: {},
+                   productType: '',
+                   finalPrice: { init: 0, final: 0 },
+                   regularPrice: { init: 0, final: 0 },
+                   currency: document.querySelector('input[name="currency"]') ? document.querySelector('input[name="currency"]').value : '',
+               }
+           },
+           created(){
+            let vm = this;
+            if (this.ecStoreExist && this.skucode && this.ecType == 'enableMagentoEC') {
+              axios.get(`${vm.queryMixedProductUrl}?skuids=${encodeURIComponent(vm.skucode)}`)
+                .then((result) => {
+                  if (JSON.parse(result.data.response).data.products.items.length > 0) {
+                    vm.megentoData = JSON.parse(result.data.response).data.products.items[0];
+                    vm.productType = vm.megentoData.__typename;
+                    // not BundleProduct
+                    if (vm.productType !== 'BundleProduct') {
+                      vm.finalPrice.final = vm.megentoData.price_range.minimum_price.final_price.value
+                      vm.regularPrice.final = vm.megentoData.price_range.minimum_price.regular_price.value
+                    }
+                    // BundleProduct
+                    if (vm.productType == "BundleProduct") {
+                      if (vm.megentoData.items.length > 0) {
+                        let finalPrice = 0
+                        let regularPrice = 0
+                        vm.megentoData.items.forEach((bundleSet, index) => {
+                          if (index == 0) {
+                            // only one option
+                            if (bundleSet.options.length == 1 && bundleSet.required == true) {
+                              finalPrice += bundleSet.options[0].product.price_range.minimum_price.final_price.value
+                              regularPrice += bundleSet.options[0].product.price_range.minimum_price.regular_price.value
+                              // mutiple option
+                            } else if (bundleSet.options.length > 1) {
+                              const sortProduct = bundleSet.options.sort((a, b) => {
+                                return a.product.price_range.minimum_price.final_price.value - b.product.price_range.minimum_price.final_price.value
+                              })
+
+                              // check has isDefault option
+                              let isDefaultOption = sortProduct.findIndex(option => {
+                                return option.is_default == true
+                              })
+
+                              // required or non-required,has isDefault option
+                              if (isDefaultOption !== -1) {
+                                finalPrice += bundleSet.options[isDefaultOption].product.price_range.minimum_price.final_price.value
+                                regularPrice += bundleSet.options[isDefaultOption].product.price_range.minimum_price.regular_price.value
+                                // hasn't isDefault option
+                              } else {
+                                // required find less price and first instock option
+                                if (bundleSet.required == true) {
+                                  const instockDefaultOption = bundleSet.options.findIndex(item => {
+                                    return item.product.stock_status == 'IN_STOCK'
+                                  })
+                                  // has instock option,add price
+                                  if (instockDefaultOption !== -1) {
+                                    finalPrice += bundleSet.options[instockDefaultOption].product.price_range.minimum_price.final_price.value
+                                    regularPrice += bundleSet.options[instockDefaultOption].product.price_range.minimum_price.regular_price.value
+                                    // all out of stock,add less price
+                                  } else {
+                                    finalPrice += bundleSet.options[0].product.price_range.minimum_price.final_price.value
+                                    regularPrice += bundleSet.options[0].product.price_range.minimum_price.regular_price.value
+                                  }
+                                }
+                                // non required and hasn't default,default option is none,price 0
+                              }
+                            }
+                          }
+                          if (index !== 0 && bundleSet.options.length == 1 && bundleSet.required == true && bundleSet.options[0].product.stock_status == "IN_STOCK") {
+                            finalPrice += bundleSet.options[0].product.price_range.minimum_price.final_price.value
+                            regularPrice += bundleSet.options[0].product.price_range.minimum_price.regular_price.value
+                          }
+                        })
+                        // 0 == false
+                        if (finalPrice && regularPrice) {
+                          vm.regularPrice.final = regularPrice
+                          vm.finalPrice.final = finalPrice
+                        }
+                      }
+                    }
+                    initPrice()
+                  }
+                })
+                .catch((error) => {
+                  console.log(error)
+                })
+            } else {
+              initPrice()
+            }
+            function initPrice() {
+              if (vm.productCondition == 'refurbish') {
+                vm.regularPrice.final = vm.newProductPrice
+                if (vm.ecType == 'disableMagentoEC') {
+                  vm.finalPrice.final = vm.disableMagentoECStandardPrice
+                  vm.regularPrice.final = vm.disableMagentoECStandardPrice
+                }
+                if (vm.ecType == 'discontinued') {
+                  vm.finalPrice.final = vm.discontinuedStandardPrice
+                  vm.regularPrice.final = vm.discontinuedStandardPrice
+                }
+              } else {
+                if (vm.ecType == 'disableMagentoEC') {
+                  vm.finalPrice.final = vm.disableMagentoECStandardPrice
+                  vm.regularPrice.final = vm.disableMagentoECStandardPrice
+                }
+                if (vm.ecType == 'discontinued') {
+                  vm.finalPrice.final = vm.discontinuedStandardPrice
+                  vm.regularPrice.final = vm.discontinuedStandardPrice
+                }
+              }
+            }
+           },
+           mounted(){
+            this.safariHacks()
+               this.selectedTab =
+               Array.from(tab).findIndex((item) =>{
+                   let tabLink = item.getAttribute('href')
+                   return window.location.href.indexOf(tabLink) >=0;
+               })
+               const localNavigation = document.querySelector('.g6-local-navigation-component')
+               let localNavigationOffsetTop = localNavigation.offsetTop
+               let elementParent = document.querySelector('.g6-local-navigation')
+               if(this.pageType !=='g6-product-buy-page'){
+                if(!document.body.classList.contains('fixed')){
+                 if(window.scrollY > localNavigationOffsetTop){
+                   if(!elementParent.classList.contains('fixed')){
+                    elementParent.classList.add('fixed')
+                    elementParent.nextElementSibling.style.paddingTop = `${localNavigation.clientHeight}px`
+                   }
+                 }else{
+                   if(elementParent.classList.contains('fixed')){
+                    elementParent.classList.remove('fixed')
+                    elementParent.nextElementSibling.style.paddingTop = "0px"
+                   }
+                 }
+                }
+               window.addEventListener('orientationchange',()=>{
+                const bodyElement = document.querySelector('body')
+                
+                if(window.innerWidth >= 1220){
+                  bodyElement.classList.remove('fixed')
+                  this.enableTouchMove()
+                }else{
+                  if(this.dropdownStatus == true){
+                    bodyElement.classList.add('fixed')
+                    this.disableTouchMove()
+                  }else{
+                    bodyElement.classList.remove('fixed')
+                    this.enableTouchMove()
+                  }
+                }
+
+                  if(elementParent.classList.contains('fixed')){
+                    elementParent.classList.remove('fixed')
+                    elementParent.nextElementSibling.style.paddingTop = "0px"
+                 }
+                 localNavigationOffsetTop = localNavigation.offsetTop
+                 
+               })
+               window.addEventListener('scroll',()=>{
+                if(!document.body.classList.contains('fixed')){
+                  if(window.scrollY > localNavigationOffsetTop){
+                    if(!elementParent.classList.contains('fixed')){
+                     elementParent.classList.add('fixed')
+                     elementParent.nextElementSibling.style.paddingTop = `${localNavigation.clientHeight}px`
+                    }
+                  }else{
+                    if(elementParent.classList.contains('fixed')){
+                     elementParent.classList.remove('fixed')
+                     elementParent.nextElementSibling.style.paddingTop = "0px"
+                    }
+                  }
+                }
+
+               })
+               }
+
+           },
+           beforeDestroy(){
+
+           },
+           methods:{
+            ecStoreExist: function () {
+              if (this.enableMagentoBuyButton == 'true' && this.memberCenterRegion && this.magentoStoreID) {
+                return true
+              } else {
+                return false
+              }
+            },
+              disableTouchMove(){
+                document.addEventListener('touchstart', this.preventScroll,{passive: false});
+              },
+              enableTouchMove(){
+                document.removeEventListener('touchstart', this.preventScroll,{passive: false});
+              },
+              preventScroll(e){
+                if($(e.target).hasClass('drop_bg_overlay')){
+                  e.stopPropagation();
+                  e.preventDefault();
+                  this.dropdownStatus = false
+                  return false;
+                }
+                if(!$(e.target).parents('.g6-local-navigation-component').length > 0 && !$(e.target).parents('#header').length > 0){
+                  e.stopPropagation();
+                  e.preventDefault();
+                  
+                  return false;
+                }
+              },
+              safariHacks() {
+                let windowsVH = window.innerHeight / 100;
+                this.windowHeight = window.innerHeight
+                document.querySelector('.drop_bg_overlay').style.setProperty('--vh', windowsVH + 'px');
+                window.addEventListener('resize', function() {
+                    this.windowHeightGap = window.innerHeight - this.windowHeight
+                    this.windowHeight = window.innerHeight
+                    document.querySelector('.drop_bg_overlay').style.setProperty('--vh', windowsVH + 'px');
+                });
+              },
+               globalnavbarDatalayerTrigger(event,styleType,componentName,lowerTitle,clickText,ctaType,nextPageLocation){
+                  clickText = event.currentTarget.textContent.trim()
+                  if(!event.currentTarget.classList.contains('buy-button')){
+                    nextPageLocation = event.currentTarget.href ? event.currentTarget.href : 'n/a'
+                  }
+                  globalnavbarClickDatalayer(clickText,styleType,componentName,lowerTitle,ctaType,nextPageLocation)
+               },
+               toggleDropdown(){
+                   if(window.screen.width < 1220){
+                    this.dropdownStatus = !this.dropdownStatus
+                   }
+               },
+               closeDropdown(){
+                this.dropdownStatus = false
+               },
+               goToBuyPage(){
+                  // datalayer
+                  const datalayerProductClick = document.querySelector('.datalayer-product-click').value ? JSON.parse(document.querySelector('.datalayer-product-click').value) : ''
+                  if(datalayerProductClick){
+                    if(!datalayerProductClick.id || !window.productName)return;
+                    const list = datalayerProductClick.list
+                    delete datalayerProductClick.list
+                    datalayerProductClick.price = window.productPrice ? `${window.productPrice}` : 'not_available';
+                    datalayerProductClick.name = window.productName ? window.productName : 'not_available';
+                    datalayerProductClick.brand = 'BenQ';
+                    datalayerProductClick.position = "1";
+                    datalayerProductClick.variant = 'not_available';
+                    productClick(list,datalayerProductClick)
+                  }
+               },
+               selectedTabAnchor(event,comeFrom){
+                this.closeDropdown()
+                event.preventDefault();
+                   this.selectedTab = null
+                   const localNavigation = document.querySelector('.g6-local-navigation-component')
+                   const localNavigationFixed = localNavigation.classList.contains('fixed')
+                   const localNavigationHeight = localNavigation.clientHeight
+                   if(comeFrom == 'selectedCompareGrid'){
+                    const anchor = document.querySelector('#compare-anchor')
+                      // when local navigation fixed,next element will add padding top
+                      if(anchor){
+                        this.selectedCompareGrid = true
+                        this.selectedFaq = false
+                        this.$nextTick(function () {
+                          if(localNavigationFixed){
+                            $('html, body').animate({
+                              scrollTop: $('#compare-anchor').offset().top
+                            }, 1000);
+                          }else{
+                            // when local navigation not fixed
+                            $('html, body').animate({
+                              scrollTop: $('#compare-anchor').offset().top - localNavigationHeight
+                            }, 1000);
+                          }
+                        });
+
+                      }
+
+                   }else{
+                      const anchor = document.querySelector('#support-entrance-anchor')
+                      if(anchor){
+                        this.selectedCompareGrid = false
+                        this.selectedFaq = true
+                        this.$nextTick(function () {
+                          // when local navigation fixed,next element will add padding top
+                          if(localNavigationFixed){
+                            $('html, body').animate({
+                              scrollTop: $('#support-entrance-anchor').offset().top
+                            }, 1000);
+                          }else{
+                            // when local navigation not fixed
+                            $('html, body').animate({
+                              scrollTop: $('#support-entrance-anchor').offset().top - localNavigationHeight
+                            }, 1000);
+                          }
+                        })
+                      }
+                   }
+               },
+               scrollTo(position){
+                $('html, body').animate({
+                  scrollTop: position
+                })
+               }
+           },
+           watch:{
+            dropdownStatus:{
+              handler:function(newVal){
+                if(window.screen.width < 1220){
+                  const bodyElement = document.querySelector('body');
+                  if(newVal == true){
+                      this.windowScrollTop = window.pageYOffset + this.windowHeightGap
+                      bodyElement.classList.add('fixed')
+                      document.body.style.top = `-${this.windowScrollTop}px`;
+                      this.disableTouchMove()
+                  }else{
+                    bodyElement.classList.remove('fixed')
+                    window.scrollTo({
+                      top: this.windowScrollTop + this.windowHeightGap,
+                  });
+                    this.enableTouchMove()
+                  }
+                }
+              }
+            }
+           }
+      })
+    })
+
+
+

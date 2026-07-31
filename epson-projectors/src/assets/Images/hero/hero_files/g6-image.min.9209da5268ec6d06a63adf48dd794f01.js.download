@@ -1,0 +1,76 @@
+window.addEventListener("load", function(event) {
+    gsap.utils.toArray(".g6-image-component.enable-zoom-in-motion .image-container").forEach((item, index) => {
+            let animation1,containerZoomIn,imageZoomIn
+            const image = item.querySelector('img') ? item.querySelector('img') : item.querySelector('.lottie-wrap:not([style*=display\\:none])');
+            console.log(image)
+            let pcAnimation = () => {
+                animation1 = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 90%",
+                        end: "top 0%",
+                        scrub: true,
+                    },
+                });
+                animation1.fromTo(
+                    item,
+                    { width: "1220px", maxWidth: "1220px", borderRadius: '32px' },
+                    { width: `${(window.innerWidth)}px`, maxWidth: "2560px", borderRadius: '0px' }
+                );
+            }
+            let tabletAndMobileAnimation = () => {
+                let borderRadiusSize = window.innerWidth < 768 ? '16px' : '32px';
+                let shrinkWidth = `${(window.innerWidth - 40)}px`;
+                let enlargeWidth = `${(window.innerWidth - 40) * 1.5}px`;
+                containerZoomIn = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 90%",
+                        end: "top 0%",
+                        scrub: true,
+                    },
+                });
+                imageZoomIn = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 90%",
+                        end: "top 0%",
+                        scrub: true,
+                    },
+                });
+                containerZoomIn.fromTo(
+                    item,
+                    { borderRadius: borderRadiusSize, width: shrinkWidth },
+                    { borderRadius: '0px', width: enlargeWidth }
+                );
+                imageZoomIn.fromTo(
+                    image,
+                    { width: shrinkWidth },
+                    { width: enlargeWidth }
+                )
+            }
+            if(window.screen.width <= 1220){
+                tabletAndMobileAnimation()
+            }else{
+                pcAnimation()
+            }
+        window.addEventListener('resize',()=>{
+            if(animation1){
+                animation1.kill()
+            }
+            if(containerZoomIn){
+                containerZoomIn.kill()
+            }
+            if(imageZoomIn){
+                imageZoomIn.kill()
+            }
+            item.removeAttribute('style')
+            image.removeAttribute('style')
+            if(window.screen.width <= 1220){
+                tabletAndMobileAnimation()
+            }else{
+                pcAnimation()
+            }
+        })
+    });
+})

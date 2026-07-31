@@ -1,0 +1,44 @@
+function componentImpressionDatalayer(component, componentName, siteCategory,position) {
+    gsap.timeline({
+        scrollTrigger: {
+            trigger: component,
+            start: 'top bottom',
+            once: true,
+            onEnter: () => {
+                if (!window.dataLayer) {
+                    window.dataLayer = []
+                }
+                window.dataLayer.push({
+                    "event": "component_impression",
+                    "site_category": siteCategory.toLowerCase(),
+                    "component_name": componentName.toLowerCase(),
+                    "position": `${position + 1}`
+                })
+                console.info(`trigger component impression data layer`)
+            }
+        }
+    });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+    const datalayerCountList = document.querySelectorAll('.datalayer-count');
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (datalayerCountList.length > 0) {
+        const advancedBannerList = document.querySelectorAll('.g6-advanced-banner.datalayer-count');
+        const compareGridList = document.querySelectorAll('.g6-compare-grid.datalayer-count');
+        if (advancedBannerList.length > 0) {
+            Array.from(advancedBannerList).forEach(component => {
+                const position = Array.from(datalayerCountList).indexOf(component)
+                componentImpressionDatalayer(component, 'advancedbanner', siteCategory,position)
+            })
+        }
+        if (compareGridList.length > 0) {
+            Array.from(compareGridList).forEach(component => {
+                const position = Array.from(datalayerCountList).indexOf(component)
+                componentImpressionDatalayer(component, 'comparegrid', siteCategory,position)
+            })
+        }
+    }
+
+
+})

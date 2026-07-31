@@ -1,0 +1,298 @@
+function g6TextDataLayer(nodeName, componentName) {
+    let bannerClickComponentList = ['g6-hero-banner', 'g6-minor-banner', 'g6-advanced-banner', 'g6-scenario-banner', 'g6-column-banner', 'g6-case-banner', 'g6-tool-banner']
+    if (componentName) {
+        const textComponent = document.querySelector(`.${nodeName}`);
+        const textContentWrapList = textComponent.querySelectorAll('.g6-text-content-wrap')
+
+        const project = !document.getElementById('siteName').value ? '' : document.getElementById('siteName').value == 'g6' ? 'b2c' : document.getElementById('siteName').value;
+        const isQsg = window.location.href.includes("/qsg/") && !window.location.href.includes("/business/") && !window.location.href.includes("/education/");
+        const site_category = (project === 'game' && isQsg) ? `zow_qsg` : (project && isQsg ? `${project}_qsg` : project && !isQsg ? project : document.querySelector('.searchProject').value);
+        // event banner_click
+        if (bannerClickComponentList.indexOf(componentName) !== -1) {
+            if (textContentWrapList.length > 0) {
+                Array.from(textContentWrapList).forEach(textContentWrap => {
+                    const button = textContentWrap.querySelector('.g6-text-btn');
+                    const link = textContentWrap.querySelector('.g6-text-link');
+                    const dualButton = textContentWrap.querySelectorAll('.g6-text-btn')[1]? textContentWrap.querySelectorAll('.g6-text-btn')[1]: '';
+                    const lower_title = textContentWrap.querySelector('.g6-text-title') ? textContentWrap.querySelector('.g6-text-title').innerText : 'n/a'
+                    if (button) {
+                        clickEvent('banner_click', button, site_category, 'btn', componentName, lower_title.trim())
+                    }
+                    if (link) {
+                        clickEvent('banner_click', link, site_category, 'link', componentName, lower_title.trim())
+                    }
+                    if (dualButton) {
+                        clickEvent('banner_click', dualButton, site_category, 'btn', componentName, lower_title.trim())
+                    }
+                })
+            }
+
+            // event text_click
+        } else if (componentName == 'g6-text') {
+            if (textContentWrapList.length > 0) {
+                Array.from(textContentWrapList).forEach(textContentWrap => {
+                    const button = textContentWrap.querySelector('.g6-text-btn');
+                    const link = textContentWrap.querySelector('.g6-text-link');
+                    const dualButton = textContentWrap.querySelectorAll('.g6-text-btn')[1]? textContentWrap.querySelectorAll('.g6-text-btn')[1]: '';
+                    const lower_title = textContentWrap.querySelector('.g6-text-title') ? textContentWrap.querySelector('.g6-text-title').textContent : 'n/a'
+                    if (button) {
+                        othersclickEvent('text_click', button, site_category, 'btn', componentName, lower_title.trim())
+                    }
+                    if (link) {
+                        othersclickEvent('text_click', link, site_category, 'link', componentName, lower_title.trim())
+                    }
+                    if (dualButton) {
+                        clickEvent('banner_click', dualButton, site_category, 'btn', componentName, lower_title.trim())
+                    }
+                })
+            }
+        } else if (componentName == 'g6-item-list') {
+            if (textContentWrapList.length > 0) {
+                Array.from(textContentWrapList).forEach(textContentWrap => {
+                    const link = textContentWrap.querySelector('.g6-text-link');
+                    const lower_title = textContentWrap.querySelector('.g6-text-title') ? textContentWrap.querySelector('.g6-text-title').textContent : 'n/a'
+                    if (link) {
+                        othersclickEvent('itemlist_click', link, site_category, 'link', componentName, lower_title.trim())
+                    }
+                })
+            }
+
+        } else if (componentName == 'g6-support-entrance') {
+            if (textContentWrapList.length > 0) {
+                Array.from(textContentWrapList).forEach(textContentWrap => {
+                    const button = textContentWrap.querySelector('.g6-text-btn');
+                    const link = textContentWrap.querySelector('.g6-text-link');
+                    const lower_title = textContentWrap.querySelector('.g6-text-title') ? textContentWrap.querySelector('.g6-text-title').textContent : 'n/a'
+                    if (button) {
+                        othersclickEvent('supportentrance_click', button, site_category, 'btn', componentName, lower_title.trim())
+                    }
+                    if (link) {
+                        othersclickEvent('supportentrance_click', link, site_category, 'link', componentName, lower_title.trim())
+                    }
+                })
+            }
+        }
+    }
+
+
+}
+function clickEvent(eventName, element, siteCategory, styleType, componentName, lowerTitle) {
+    element.addEventListener('click', function (event) {
+        let clickText = event.currentTarget.textContent
+        if (!window.dataLayer) {
+            window.dataLayer = []
+        }
+        if (!lowerTitle) {
+            lowerTitle = event.target.parentElement.parentElement.querySelector('.g6-text-title') ? event.target.parentElement.parentElement.querySelector('.g6-text-title').innerText : 'n/a';
+        }
+        const next_page_location = event.currentTarget.href ? event.currentTarget.href : '';
+        window.dataLayer.push({
+            "event": eventName.toLowerCase(),
+            "site_category": siteCategory.toLowerCase(),
+            "style_type": `${styleType.toLowerCase()}`,
+            "component_name": componentName.replace('g6', '').replaceAll('-', '').toLowerCase(),
+            "lower_title": lowerTitle.toLowerCase(),
+            "click_text": clickText.toLowerCase(),
+            "cta_type": next_page_location?.includes("/buy.html") || next_page_location?.includes("/refurbished-buy.html") ? 'buy' : 'other',
+            "next_page_location": next_page_location ? next_page_location : 'n/a',
+        })
+        console.info(`trigger ${styleType} data layer, component: `, componentName)
+    })
+}
+
+function othersclickEvent(eventName, element, siteCategory, styleType, componentName, lowerTitle) {
+    element.addEventListener('click', function (event) {
+        let clickText = event.currentTarget.textContent
+        if (!window.dataLayer) {
+            window.dataLayer = []
+        }
+        if (!lowerTitle) {
+            lowerTitle = event.target.parentElement.parentElement.querySelector('.g6-text-title') ? event.target.parentElement.parentElement.querySelector('.g6-text-title').textContent : 'n/a';
+        }
+        const next_page_location = event.currentTarget.href ? event.currentTarget.href : '';
+        window.dataLayer.push({
+            "event": eventName.toLowerCase(),
+            "site_category": siteCategory.toLowerCase(),
+            "style_type": `${styleType.toLowerCase()}`,
+            "lower_title": lowerTitle.toLowerCase(),
+            "click_text": clickText.toLowerCase(),
+            "cta_type": next_page_location?.includes("/buy.html") || next_page_location?.includes("/refurbished-buy.html") ? 'buy' : 'other',
+            "next_page_location": next_page_location ? next_page_location : 'n/a',
+        })
+        console.info(`trigger ${styleType} data layer, component: `, componentName)
+    })
+}
+function g6TextAniFn(nodeName,componentName) {
+
+    let isStillText = document.getElementsByClassName(nodeName)[0].parentNode.classList.contains('stillText');
+
+    if(typeof(isStillText) == 'boolean' && !isStillText) {
+        let nodeClass = "." + nodeName;
+        let textWrap = nodeClass + " .g6-text-wrap";
+        let iconWrap = nodeClass + " .g6-text-icon-wrap";
+        let tag =  nodeClass + " .g6-text-tag";
+        let subtitle =  nodeClass + " .g6-text-subtitle";
+        let title =  nodeClass + " .g6-text-title";
+        let desc =  nodeClass + " .g6-text-desc";
+        let btn =  nodeClass + " .g6-text-btn";
+        let link =  nodeClass + " .g6-text-link";
+
+        gsap.set(
+            [iconWrap, tag, subtitle, title, desc],
+            {y: 30, autoAlpha: 0},
+        );
+        // btn/link stay visibility:visible so keyboard focus order isn't broken pre-animation (WCAG 2.4.3/2.1.1)
+        gsap.set(
+            [btn, link],
+            {y: 30, opacity: 0},
+        );
+        let startPosition = componentName == 'g6-item-list'? '70%' : '90%';
+        let g6TextAni = gsap.timeline({
+            scrollTrigger: {
+                trigger: nodeClass,
+                start: `top ${startPosition}`,
+            }
+        });
+
+        let iconWrapContent = document.querySelectorAll(iconWrap)[0];
+        let tagContent = document.querySelectorAll(tag)[0] ? document.querySelectorAll(tag)[0].textContent : '';
+        let subtitleContent = document.querySelectorAll(subtitle)[0] ? document.querySelectorAll(subtitle)[0].textContent : '';
+        let titleContent = document.querySelectorAll(title)[0] ? document.querySelectorAll(title)[0].textContent : '';
+        let descContent = document.querySelectorAll(desc)[0] ? document.querySelectorAll(desc)[0].textContent : '';
+        let btnContent = document.querySelectorAll(btn)[0] ? document.querySelectorAll(btn)[0].textContent : '';
+        let linkContent = document.querySelectorAll(link)[0] ? document.querySelectorAll(link)[0].textContent : '';
+
+        let iconTop = document.querySelectorAll(textWrap)[0].classList.contains('icon-top');
+
+        if(iconTop) {
+            let firstAni = true;
+            // iconWrap
+            if(iconWrapContent !== undefined) {
+                g6TextAni.to(iconWrap, {y: 0, autoAlpha: 1});
+                firstAni = false;
+            }
+            // tag
+            if(tagContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(tag, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(tag, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // subtitle
+            if(subtitleContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(subtitle, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(subtitle, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // title
+            if(titleContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(title, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(title, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // desc
+            if(descContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(desc, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(desc, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // btn
+            if(btnContent != '') {
+                if(firstAni) {
+                    g6TextAni.to(btn, {y: 0, opacity: 1});
+                } else {
+                    g6TextAni.to(btn, {y: 0, opacity: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // link
+            if(linkContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(link, {y: 0, opacity: 1});
+                } else {
+                    g6TextAni.to(link, {y: 0, opacity: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+        } else {
+            let firstAni = true;
+            // tag
+            if(tagContent !== '') {
+                g6TextAni.to(tag, {y: 0, autoAlpha: 1});
+                firstAni = false;
+            }
+            // subtitle
+            if(subtitleContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(subtitle, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(subtitle, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // title
+            if(titleContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(title, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(title, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // desc
+            if(descContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(desc, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(desc, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // btn
+            if(btnContent != '') {
+                if(firstAni) {
+                    g6TextAni.to(btn, {y: 0, opacity: 1});
+                } else {
+                    g6TextAni.to(btn, {y: 0, opacity: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // link
+            if(linkContent !== '') {
+                if(firstAni) {
+                    g6TextAni.to(link, {y: 0, opacity: 1});
+                } else {
+                    g6TextAni.to(link, {y: 0, opacity: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+            // iconWrap
+            if(iconWrapContent !== undefined) {
+                if(firstAni) {
+                    g6TextAni.to(iconWrap, {y: 0, autoAlpha: 1});
+                } else {
+                    g6TextAni.to(iconWrap, {y: 0, autoAlpha: 1}, '<+=0.06');
+                }
+                firstAni = false;
+            }
+        }
+
+        // if this Text Component is inside the Hero Banner Component, call g6HeroAniFn()
+        if(document.getElementsByClassName(nodeName)[0].parentNode.classList.contains('hero-banner-wrap')) {
+            g6TextAni.eventCallback("onComplete", g6HeroAniFn, [nodeName]);
+        }
+
+        return g6TextAni;
+    }
+}

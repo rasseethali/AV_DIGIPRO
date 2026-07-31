@@ -1,0 +1,71 @@
+[v-cloak]{display:none}
+.g6-local-navigation.fixed .g6-local-navigation-component{position:fixed;top:0;z-index:99;left:0}
+.g6-local-navigation-component{width:100%;background-color:#fff;position:relative}
+.g6-local-navigation-component.no-fixed{position:relative !important;z-index:unset !important}
+@media(max-width:1220px){.g6-local-navigation-component.active .g6-local-navigation-container{background-color:#fff}
+.g6-local-navigation-component.active .g6-local-navigation-container .left-container span{transform:rotate(180deg)}
+.g6-local-navigation-component.active .drop_bg_overlay{display:block}
+}
+@media(max-width:1220px) and (max-width:1220px){.g6-local-navigation-component.active .g6-local-navigation-container .right-container{height:auto;background-color:#fff;padding:10px 20px;position:absolute;width:calc(100% + 2px);top:calc(100% + 1px);left:-1px}
+.g6-local-navigation-component.active .g6-local-navigation-container .right-container>li:not(.button){display:block}
+.g6-local-navigation-component.active .g6-local-navigation-container .right-container>li.solid-button-style{display:flex}
+}
+.g6-local-navigation-component .g6-local-navigation-container{position:relative;max-width:1220px;width:100%;height:50px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container{border:1px solid #f2f2f2;z-index:51;height:auto;padding:0;flex-direction:column;align-items:flex-start}
+}
+.g6-local-navigation-component .g6-local-navigation-container .left-container,.g6-local-navigation-component .g6-local-navigation-container .right-container{height:100%;display:flex}
+.g6-local-navigation-component .g6-local-navigation-container .left-container{align-items:center;justify-content:space-between;gap:10px}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer{display:flex;gap:40px}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer{gap:8px 40px;flex-wrap:wrap}
+}
+@media(max-width:767px){.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer{flex:1;gap:8px 20px}
+}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer .priceContainer{display:flex;align-items:center;font-family:Roboto;font-size:12px;font-style:normal;font-weight:400;line-height:normal}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer .priceContainer .finalPrice{margin-right:12px}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .overviewContainer .priceContainer .regularPrice{text-decoration:line-through}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .left-container{width:100%;min-height:64px;padding:16px 40px}
+}
+@media(max-width:767px){.g6-local-navigation-component .g6-local-navigation-container .left-container{height:auto;gap:20px;padding:16px 20px}
+}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container{display:flex;gap:0 10px;height:auto}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container p{font-size:16px}
+}
+@media(max-width:767px){.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container p{flex:1}
+}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container span{display:none}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container span{flex-shrink:0;transition:.5s;display:flex;align-items:center;justify-content:center;height:24px;width:24px}
+}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .title-container span svg{width:100%}
+.g6-local-navigation-component .g6-local-navigation-container .left-container .buy-button{flex-shrink:0;min-width:66px;max-width:138px;padding:6px 12px;font-size:12px;height:auto;justify-content:center}
+@media(min-width:1221px){.g6-local-navigation-component .g6-local-navigation-container .left-container .buy-button{display:none}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container{text-align:center;align-items:stretch}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container{width:100%;flex-direction:column;gap:1px 0}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>*{display:flex;align-items:center;justify-content:center}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container>*{width:100%;justify-content:flex-start}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button)+li:not(.button){padding-left:24px}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button)+li:not(.button){padding:0}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button)+li.button{padding-left:28px}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button)+li.button{display:none;padding:0}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button).active:not(.solid-button-style):not(.button) a{color:#7231c6;font-weight:800}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button){display:none;height:44px}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li:not(.button):not(:last-of-type){border-bottom:1px solid #f2f2f2}
+}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container>li.button{display:none}
+}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li.solid-button-style a{padding:6px 12px;height:30px;border-radius:4px;background:#000;border:0;font-family:'Roboto';font-weight:400;font-size:14px;line-height:21px;color:#fff;overflow:hidden;cursor:pointer;display:flex;align-items:center;text-decoration:none}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li.solid-button-style a:hover{background:#7231c6;border-color:#7231c6;color:#fff;text-decoration:none}
+.g6-local-navigation-component .g6-local-navigation-container .right-container>li.solid-button-style a:active,.g6-local-navigation-component .g6-local-navigation-container .right-container>li.solid-button-style a:focus{background:#6b53cc;border-color:#6b53cc;color:#fff}
+.g6-local-navigation-component .g6-local-navigation-container .right-container :not(.solid-button-style):not(.button) a{text-decoration:none;display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:'Roboto';font-weight:500;font-size:14px;line-height:16px;color:#757575}
+@media(max-width:1220px){.g6-local-navigation-component .g6-local-navigation-container .right-container:not(.solid-button-style):not(.button) a{justify-content:flex-start}
+}
+.g6-local-navigation-component .buy-button{text-decoration:none;padding:6px 12px;height:30px;border-radius:4px;background:#000;border:0;font-family:'Roboto';font-weight:400;font-size:14px;line-height:21px;color:#fff;overflow:hidden;cursor:pointer;display:flex;align-items:center}
+.g6-local-navigation-component .buy-button:hover{background:#7231c6;border-color:#7231c6;color:#fff;text-decoration:none}
+.g6-local-navigation-component .buy-button:active,.g6-local-navigation-component .buy-button:focus{background:#6b53cc;border-color:#6b53cc;color:#fff}
+.g6-local-navigation-component .drop_bg_overlay{width:100%;position:absolute;top:100%;left:0;right:0;transition:200ms;background-color:rgba(0,0,0,0.5);height:100vh;height:calc(var(--vh, 1vh) * 100);z-index:50;display:none}
+@media(min-width:1221px){.g6-local-navigation-component .drop_bg_overlay{display:none !important}
+}

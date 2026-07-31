@@ -1,0 +1,37 @@
+window.addEventListener('DOMContentLoaded', function () {
+    // Add datalayer click event for column banner image compare slider
+    const itemList = document.querySelectorAll('.g6-item-list-component li');
+    const siteCategory = document.querySelector('.searchProject').value;
+
+    if (itemList.length > 0) {
+        itemList.forEach((item) => {
+            item.addEventListener('click', function (event) {
+                event.stopImmediatePropagation();
+                const clickedCta = event.target.closest('.g6-text-btn, .g6-text-link');
+
+                const itemListComponent = item.closest('.g6-item-list-component');
+                let lowerTitle = 'n/a';
+                if (itemListComponent) {
+                    const titleEl = itemListComponent.querySelector('.g6-text-title');
+                    if (titleEl && titleEl.textContent) {
+                        lowerTitle = titleEl.textContent.trim().toLowerCase();
+                    }
+                }
+                if (!window.dataLayer) {
+                    window.dataLayer = [];
+                }
+                const clickText = clickedCta.textContent ? clickedCta.textContent.trim().toLowerCase() : 'n/a';
+
+                window.dataLayer.push({
+                    event: 'itemlist_click',
+                    site_category: siteCategory,
+                    style_type: 'btn',
+                    lower_title: lowerTitle,
+                    click_text: clickText,
+                    cta_type: 'other',
+                    next_page_location: 'n/a',
+                });
+            });
+        });
+    }
+});

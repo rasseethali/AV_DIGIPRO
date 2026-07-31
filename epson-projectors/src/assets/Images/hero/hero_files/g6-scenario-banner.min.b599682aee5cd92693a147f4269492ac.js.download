@@ -1,0 +1,47 @@
+window.addEventListener("load", function() {
+    gsap.utils.toArray(`.g6-scenario-banner-component`).forEach((item) => {
+        let bg = item.querySelector('.scenario-banner-component-wrapper');
+        let content = item.querySelector('.scenario-banner-content');
+        let enableMotion = item.classList.contains('enable-motion');
+
+        if(enableMotion) {
+            if(item.classList.contains('mask-center')){
+                let componentHeight = content.clientHeight + bg.clientHeight;
+                gsap.set(item, {height: componentHeight, overflow: 'visible'});
+                let move = -(window.innerHeight / 2) - (content.clientHeight / 2 )
+                let contentEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top top",
+                        end:`top+=${content.clientHeight} top`,
+                        scrub: true,                        
+                    },
+                });
+                let contentEnter1 = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top top",
+                        end:`top+=${content.clientHeight} top`,
+                    },
+                });
+                contentEnter1.to(bg, {position: 'sticky', top: 0})
+                contentEnter.to(content, {y: `${move}px`})
+    
+            } else {
+                gsap.set(bg, {autoAlpha: 0.3});
+    
+                let notCenterAni = gsap.timeline({
+                    defaults: {
+                        duration: .5,
+                    },
+                    scrollTrigger: {
+                        trigger: item,
+                        start: 'top center',
+                    }
+                });
+    
+                notCenterAni.to(bg, {autoAlpha: 1});
+            }
+        }
+    });
+});

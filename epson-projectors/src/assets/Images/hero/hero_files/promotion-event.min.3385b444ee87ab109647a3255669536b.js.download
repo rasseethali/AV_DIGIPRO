@@ -1,0 +1,97 @@
+
+function promotionView(component, currencyCode, datalayerData) {
+    gsap.timeline({
+        scrollTrigger: {
+            onUpdate:(self)=>{
+                if(ScrollTrigger.isInViewport(component)){
+                    window.dataLayer = window.dataLayer ? window.dataLayer : []
+                    dataLayer.push({
+                        'event': 'promotionView',
+                        'ecommerce': {
+                            'currencyCode': currencyCode,
+                            'promoView': {
+                                'promotions': datalayerData
+                            }
+                        }
+                    });
+                    console.info(`datalayer trigger promotionView`)
+                    self.kill()
+                }
+            },
+        },
+    });
+}
+function promotionClick(component, currencyCode, datalayerData) {
+    const textButtonList = component.querySelectorAll('.g6-text-component .g6-text-wrap .g6-text-btn:not(.youtube)')
+    window.dataLayer = window.dataLayer ? window.dataLayer : []
+    if (textButtonList.length > 0) {
+        Array.from(textButtonList).forEach(textButton => {
+            textButton.addEventListener('click', () => {
+                dataLayer.push({
+                    'event': 'promotionClick',
+                    'ecommerce': {
+                        'currencyCode': currencyCode,
+                        'promoClick': {
+                            'promotions': datalayerData
+                        }
+                    }
+                });
+                console.info(`datalayer trigger promotionClick`)
+            })
+        })
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+    window.dataLayer = window.dataLayer ? window.dataLayer : []
+    const componentList = document.querySelectorAll('.g6-minor-banner.datalayer-count,.g6-hero-banner.datalayer-count')
+    const currencyCode = document.querySelector('[name="gacurrency"]').value
+    if (componentList.length > 0) {
+        Array.from(componentList).forEach(component => {
+            const dataLayerCountElementList = document.querySelectorAll('.datalayer-count')
+            const position = Array.from(dataLayerCountElementList).indexOf(component)
+            const textButtonList = component.querySelectorAll('.g6-text-component .g6-text-wrap .g6-text-btn:not(.youtube)')
+            const promotionViewInputList = component.querySelectorAll('.datalayer-promotion-view')
+            const promotionClickInputList = component.querySelectorAll('.datalayer-promotion-click')
+            let promotionViewListArray = []
+
+            if (promotionViewInputList.length > 0) {
+                Array.from(promotionViewInputList).forEach(promotionView => {
+                    if (promotionView.value) {
+                        const data = JSON.parse(promotionView.value)
+                        data.creative = data.creative.replace('g6','').replaceAll('-','')    
+                        data.position = `${position + 1}`;
+                        promotionViewListArray.push(data)
+                    }
+                })
+            }
+
+            if (textButtonList.length > 0) {
+                Array.from(textButtonList).forEach((textButton, index) => {
+
+                    textButton.addEventListener('click', () => {
+                        if (promotionClickInputList[index]) {
+                            const datalayerData = JSON.parse(promotionClickInputList[index].value)
+                            datalayerData.creative = datalayerData.creative.replace('g6','').replaceAll('-','')    
+                            datalayerData.position = `${position + 1}`;
+
+                            dataLayer.push({
+                                'event': 'promotionClick',
+                                'ecommerce': {
+                                    'currencyCode': currencyCode,
+                                    'promoClick': {
+                                        'promotions': [datalayerData]
+                                    }
+                                }
+                            });
+                            console.info(`datalayer trigger promotionClick`)
+                        }
+
+                    })
+
+                })
+            }
+            promotionView(component, currencyCode, promotionViewListArray)
+        })
+    }
+})

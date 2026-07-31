@@ -1,0 +1,662 @@
+function compareClickDatalayer(styleType, componentName, lowerTitle, clickText, next_page_location) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "compare_click",
+        "site_category": siteCategory.toLowerCase(),
+        "lower_title": lowerTitle.toLowerCase(),
+        "click_text": clickText ? clickText.toLowerCase() : 'n/a',
+        "style_type": styleType.toLowerCase(),
+        "component_name": componentName.toLowerCase(),
+        "cta_type": next_page_location?.includes("/buy.html") || next_page_location?.includes("/refurbished-buy.html") ? 'buy' : 'other',
+        "next_page_location": next_page_location ? next_page_location : 'n/a',
+    })
+    console.info(`trigger compare click data layer`)
+}
+
+function btnTabClickDatalayer(componentName,clickText,nextPageLocation) {
+    const siteCategory = document.querySelector('.searchProject').value;
+    if (!window.dataLayer) {
+        window.dataLayer = []
+    }
+    window.dataLayer.push({
+        "event": "btn_tab_click",
+        "site_category": siteCategory.toLowerCase(),
+        "click_text": clickText.toLowerCase(),
+        "component_name": componentName.toLowerCase(),
+        "next_page_location": nextPageLocation.toLowerCase(),
+    })
+    console.info(`trigger btn tab click data layer`)
+}
+
+
+
+
+// for similar product
+window.addEventListener('load', function () {
+    const similarProductComponentList = document.querySelectorAll('.g6-similar-product-component')
+    if (similarProductComponentList.length > 0) {
+        const componentName = 'similarproduct'
+        Array.from(similarProductComponentList).forEach(similarProductComponent => {
+            const bottomWrapSpecList = similarProductComponent.querySelectorAll('.bottom-wrap .spec-content .d-block')
+            const link = similarProductComponent.querySelector('.container > a.bottom-link')
+            if (link) {
+                link.addEventListener('click', function (event) {
+                    const clickText = event.currentTarget.textContent
+                    compareClickDatalayer('link', componentName, 'n/a', clickText, event.currentTarget.href)
+                })
+            }
+            Array.from(bottomWrapSpecList).forEach((bottomWrapSpec, bottomWrapSpecIndex) => {
+                const enegryLabel = bottomWrapSpec.querySelector('.energy-link');
+                const buyBtn = bottomWrapSpec.querySelector('.buy-btn');
+                const lowerTitle = similarProductComponent.querySelectorAll('.top-wrap .spec-content .g6-subtitle-md')[bottomWrapSpecIndex] ? similarProductComponent.querySelectorAll('.top-wrap .spec-content .g6-subtitle-md')[bottomWrapSpecIndex].textContent : 'n/a'
+                if (enegryLabel) {
+                    enegryLabel.addEventListener('click', function (event) {
+                        const clickText = event.currentTarget.textContent
+                        compareClickDatalayer('link', componentName, lowerTitle, clickText, event.currentTarget.href)
+                    })
+                }
+                if (buyBtn) {
+                    buyBtn.addEventListener('click', function (event) {
+                        const clickText = event.currentTarget.textContent
+                        compareClickDatalayer('btn', componentName, lowerTitle, clickText, event.currentTarget.href)
+                    })
+                }
+            })
+        })
+    }
+})
+
+window.addEventListener('DOMContentLoaded', function () {
+    if (typeof Vue3 === 'undefined') return;
+    var { createApp, ref, computed, watch, onMounted, onBeforeMount, onBeforeUnmount, nextTick } = Vue3;
+
+    const compareAnchor = document.getElementById('compare-anchor');
+    if (!compareAnchor) return;
+
+    createApp({
+        setup() {
+            const currentTab = ref(0);
+            const currentColumnNum = ref(0);
+            const swiperTab = ref(null);
+            const swiperArr = ref([]);
+            const showArrow = ref(false);
+            const tabIndex = ref(-1);
+            const itemIndex = ref(-1);
+            const attributeIndex = ref(-1);
+            const popUpShow = ref(false);
+            const showSticky = ref(false);
+            const sortedModelsArr = ref([]);
+            const skuArr = ref([]);
+            const uniqueSkuArr = ref([]);
+            const priceArr = ref([]);
+            const modelPriceArr = ref([]);
+            const hasDescription = ref(false);
+            const windowScrollTop = ref(0);
+            const windowHeight = ref(window.innerHeight);
+            const windowHeightGap = ref(0);
+            const currency = ref(document.querySelector('input[name="currency"]') ? document.querySelector('input[name="currency"]').value : '');
+            const priceInitialized = ref(false);
+            const queryMixedProductUrl = ref(document.querySelector('input[name="queryMixedProductUrl"]') ? document.querySelector('input[name="queryMixedProductUrl"]').value : '');
+            let scrollPos = 0;
+
+            const totalTabEl = document.getElementById('totalTab');
+            const tab = ref({
+                notNullTab: true,
+                hasSwiper: false,
+                width: 164,
+                gap: 32,
+                total: totalTabEl ? totalTabEl.value : 1,
+                totalWidth: 0,
+            });
+
+            function separateValues(value, type) {
+                let separator = ',';
+                let template = '';
+
+                if (type == 'multi_and') {
+                    separator = ',';
+                } else if (type == 'multi_or') {
+                    separator = '/';
+                }
+
+                let valueArr = value.split(separator);
+
+                for (let i = 0; i < valueArr.length; i++) {
+                    (i != valueArr.length - 1) ? template += `${valueArr[i]}${separator}<br/>` : template += `${valueArr[i]}`;
+                }
+                return template;
+            }
+
+            function numberDecimalPoint(value) {
+                const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : '';
+
+                if (value !== 0 && !value) return '';
+                if (!priceDecimalPoint) {
+                    return value;
+                } else if (priceDecimalPoint === 'fixed2') {
+                    const arrayNumber = value.toString().split('.');
+                    if (arrayNumber.length == 1) {
+                        return value.toString() + '.00';
+                    }
+                    if (arrayNumber.length > 1) {
+                        if (arrayNumber[1].length < 2) {
+                            return value.toString() + '0';
+                        }
+                        return value;
+                    }
+                } else {
+                    return value;
+                }
+            }
+
+            function numberThousandsCommas(value) {
+                const priceDecimalPoint = document.querySelector('input[name="priceDecimalPoint"]') ? document.querySelector('input[name="priceDecimalPoint"]').value : '';
+                if (priceDecimalPoint === 'round') {
+                    value = Math.round(parseFloat(value));
+                }
+
+                const enablePriceThousandSeparator = document.querySelector('input[name="enablePriceThousandSeparator"]') ? document.querySelector('input[name="enablePriceThousandSeparator"]').value : '';
+
+                if (value !== 0 && !value) return '';
+                if (enablePriceThousandSeparator === 'false' || !enablePriceThousandSeparator) {
+                    return value;
+                } else {
+                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+            }
+
+            function formatPrice(value) {
+                if (value === null || value === undefined || value === '-1') return '-';
+                return numberThousandsCommas(numberDecimalPoint(value));
+            }
+
+            async function getPrice(sku) {
+                return await queryProduct(sku, queryMixedProductUrl.value);
+            }
+
+            function productClickDatalayerTrigger(event, elementType) {
+                if (!priceInitialized.value) { return; }
+                const slide = event.currentTarget.closest('.swiper-slide');
+                if (!slide) return;
+                const datalayerClickInput = slide.querySelector('.datalayer-product-click');
+                if (!datalayerClickInput) return;
+                const datalayerValue = JSON.parse(datalayerClickInput.value);
+                const ecProductName = slide.querySelector('.datalayer-product-name') ? slide.querySelector('.datalayer-product-name').value : '';
+                const productPrice = slide.querySelector('.datalayer-product-price') ? slide.querySelector('.datalayer-product-price').value : '';
+                const allActiveSlide = document.querySelectorAll('.compare-grid-content.active .swiper-slide.prod-slides');
+                const position = Array.from(allActiveSlide).indexOf(slide);
+                const list = datalayerValue.list;
+                delete datalayerValue.list;
+                datalayerValue.name = ecProductName ? ecProductName : datalayerValue.name ? datalayerValue.name : 'not_available';
+                datalayerValue.price = productPrice ? productPrice : 'not_available';
+                datalayerValue.position = `${position + 1}`;
+                datalayerValue.brand = 'BenQ';
+                datalayerValue.variant = 'not_available';
+                productClick(list, datalayerValue);
+            }
+
+            function productImpressionDatalayerTrigger() {
+                if (!priceInitialized.value) { return; }
+                const allActiveSlide = document.querySelectorAll('.compare-grid-content.active .swiper-slide.prod-slides');
+                const activeOverviewPageLinkSlide = document.querySelectorAll('.compare-grid-content.active .swiper-slide.prod-slides.overview-page-link');
+                const dataLayerArray = [];
+                activeOverviewPageLinkSlide.forEach(slide => {
+                    const ecProductName = slide.querySelector('.datalayer-product-name') ? slide.querySelector('.datalayer-product-name').value : '';
+                    const datalayerValue = slide.querySelector('.datalayer-product-impression') ? JSON.parse(slide.querySelector('.datalayer-product-impression').value) : '';
+                    const productPrice = slide.querySelector('.datalayer-product-price') ? slide.querySelector('.datalayer-product-price').value : '';
+                    const position = Array.from(allActiveSlide).indexOf(slide);
+                    datalayerValue.name = ecProductName ? ecProductName : datalayerValue.name ? datalayerValue.name : 'not_available';
+                    datalayerValue.price = productPrice ? productPrice : 'not_available';
+                    datalayerValue.position = `${position + 1}`;
+                    datalayerValue.brand = 'BenQ';
+                    datalayerValue.variant = 'not_available';
+
+                    dataLayerArray.push(datalayerValue);
+                });
+                console.info('dataLayerArray', dataLayerArray);
+                productImpression(dataLayerArray);
+            }
+
+            function disableTouchMove() {
+                document.addEventListener('touchstart', preventScroll, { passive: false });
+            }
+
+            function enableTouchMove() {
+                document.removeEventListener('touchstart', preventScroll, { passive: false });
+            }
+
+            function preventScroll(e) {
+                if ($(e.target).hasClass('overlay-bg')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeOverlayNav();
+                    return false;
+                }
+                if (!$(e.target).parents('.g6-local-navigation-component').length > 0 && !$(e.target).parents('#header').length > 0 && !$(e.target).parents('.popup-container').length > 0) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+
+            function safariHacks() {
+                let windowsVH = window.innerHeight / 100;
+                windowHeight.value = window.innerHeight;
+
+                window.addEventListener('resize', function () {
+                    windowHeightGap.value = window.innerHeight - windowHeight.value;
+                    windowHeight.value = window.innerHeight;
+                });
+            }
+
+            function compareDatalayerTrigger(styleType, lowerTitle, clickText, event) {
+                let templowerTitle = lowerTitle;
+                let dataLayerText = '';
+                let contentText = '';
+                if (clickText == '') {
+                    contentText = event.target.innerText;
+                } else {
+                    if (clickText == 'img') {
+                        contentText = event.target.alt;
+                    } else {
+                        dataLayerText = clickText;
+                    }
+                }
+                if (lowerTitle == '$attributeName' && event) {
+                    let attribute = event.target.closest('.spec-box').querySelector(".spec-title p").innerText;
+                    templowerTitle = attribute;
+                }
+                else if (lowerTitle == '$itemtitle' && event) {
+                    let itemtitle = event.target.closest('.swiper-slide').querySelector(".title").innerText;
+                    templowerTitle = itemtitle;
+                }
+                compareClickDatalayer(styleType, 'comparegrid', templowerTitle, dataLayerText ? dataLayerText : contentText, event.currentTarget.href ? event.currentTarget.href : '');
+            }
+
+            function switchTab(event, tabIdx) {
+                currentTab.value = tabIdx;
+                if (swiperTab.value && typeof swiperTab.value.slideTo === 'function') {
+                    swiperTab.value.slideTo(tabIdx, 300);
+                }
+                if (swiperArr.value[tabIdx] && typeof swiperArr.value[tabIdx].slideTo === 'function') {
+                    swiperArr.value[tabIdx].slideTo(0, 0);
+                }
+                checkDesc(currentTab.value);
+                nextTick(() => {
+                    checkBtnWidth(currentTab.value);
+                    onResize();
+                });
+
+                const clickText = event.currentTarget.innerText ? event.currentTarget.innerText.trim() : 'n/a';
+                btnTabClickDatalayer('comparegrid', clickText, 'n/a');
+                nextTick(() => {
+                    productImpressionDatalayerTrigger();
+                });
+            }
+
+            function checkDesc(tabIdx) {
+                hasDescription.value = false;
+                let slideIndex = `.main-content .slide-wrapper-${tabIdx + 1} .desc`;
+                let slideWrapper = document.querySelector(slideIndex);
+                if (slideWrapper) {
+                    let desc = document.querySelectorAll(slideIndex);
+                    for (var i = 0; i < desc.length; i++) {
+                        desc[i].innerHTML ? hasDescription.value = true : '';
+                    }
+                }
+            }
+
+            function onResize() {
+                let content = document.querySelector('.g6-compare-gird-component');
+                if (!content) return;
+                let contentHeight = content.offsetTop;
+                if (window.scrollY > contentHeight - 0.25 * window.innerHeight && window.scrollY < contentHeight + content.offsetHeight - (0.75 * window.innerHeight)) {
+                    if (window.innerWidth >= 1220) {
+                        if (currentColumnNum.value >= 6) {
+                            showArrow.value = true;
+                        }
+                    } else if (window.innerWidth < 1220 && window.innerWidth >= 768) {
+                        if (currentColumnNum.value >= 4) {
+                            showArrow.value = true;
+                        }
+                    } else if (window.innerWidth < 768) {
+                        if (currentColumnNum.value >= 3) {
+                            showArrow.value = true;
+                        }
+                    }
+                }
+                else {
+                    showArrow.value = false;
+                }
+                if (showArrow.value) {
+                    const currentTabEl = document.getElementsByClassName('compare-grid-content')[currentTab.value];
+                    if (currentTabEl) {
+                        let swiperContent = currentTabEl.querySelector('.swiper-title.main-content');
+                        if (swiperContent && swiperContent.swiper) {
+                            swiperContent.swiper.navigation.update();
+                        }
+                    }
+                }
+            }
+
+            function openPopup(tabIdx, item, attribute) {
+                tabIndex.value = tabIdx;
+                itemIndex.value = item;
+                attributeIndex.value = attribute;
+                popUpShow.value = true;
+                if (window.innerWidth <= 1024) {
+                    document.body.style.overflow = `hidden`;
+                }
+                disableScroll();
+                disableTouchMove();
+            }
+
+            function closePopup() {
+                popUpShow.value = false;
+                if (window.innerWidth <= 1024) {
+                    document.body.style.overflow = `visible`;
+                }
+                enableScroll();
+                enableTouchMove();
+            }
+
+            function disableScroll() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                window.onscroll = function () {
+                    window.scrollTo(scrollLeft, scrollTop);
+                };
+            }
+
+            function enableScroll() {
+                window.onscroll = function () { };
+            }
+
+            function checkHitTop() {
+                let current = document.getElementsByClassName('compare-grid-content')[currentTab.value];
+                if (current) {
+                    let title = current.querySelector('.swiper-slide-active .title');
+                    let stickyEl = current.querySelector('.sticky-top');
+                    if (!title || !stickyEl) return;
+                    let stickyHeight = stickyEl.clientHeight;
+                    let titleToTop = window.pageYOffset + title.getBoundingClientRect().top;
+                    let nav = document.getElementsByClassName('g6-local-navigation-component')[0];
+                    let navHeight = nav ? nav.scrollHeight : 0;
+                    if (!document.body.classList.contains('fixed')) {
+                        if (((document.body.getBoundingClientRect()).top > scrollPos) == false) {
+                            if (window.scrollY + stickyHeight + 20 > (titleToTop - navHeight)) {
+                                showSticky.value = true;
+                            }
+                        }
+                        else if (((document.body.getBoundingClientRect()).top > scrollPos) == true) {
+                            if (window.scrollY + 20 < (titleToTop - navHeight)) {
+                                showSticky.value = false;
+                            }
+                        }
+                        scrollPos = (document.body.getBoundingClientRect()).top;
+                    }
+                }
+            }
+
+            function checkBtnWidth(tabIdx) {
+                let contentTab = `.compare-grid-content .main-content .slide-wrapper-${tabIdx + 1}`;
+                let contentWrapper = document.querySelectorAll(`${contentTab}`);
+                if (contentWrapper) {
+                    let buttonWrap = document.querySelectorAll(`${contentTab} .swiper-slide .button`);
+                    let arr = [];
+                    buttonWrap.forEach((e) => {
+                        arr.push(e.offsetWidth);
+                    });
+                    let maxWidth = Math.max(...arr);
+                    buttonWrap.forEach((e) => {
+                        e.style.width = `${maxWidth + 1}px`;
+                    });
+                }
+            }
+
+            watch(currentTab, () => {
+                const columnNumEl = document.getElementsByClassName('columnNumber')[currentTab.value];
+                if (columnNumEl) {
+                    currentColumnNum.value = columnNumEl.value;
+                }
+            });
+
+            onMounted(() => {
+                checkBtnWidth(currentTab.value);
+                const columnNumEl = document.getElementsByClassName('columnNumber')[currentTab.value];
+                if (columnNumEl) {
+                    currentColumnNum.value = columnNumEl.value;
+                }
+                checkDesc(currentTab.value);
+
+                const activeTabEl = document.querySelector(".compare-grid-tab-container #compare-grid-tabs .tab.active");
+                if (activeTabEl) {
+                    if (activeTabEl.textContent == '' && tab.value.total == 1) {
+                        tab.value.notNullTab = false;
+                    }
+                }
+
+                const tabContainer = document.querySelector('.compare-grid-tab-container #compare-grid-tabs');
+                if (tabContainer) {
+                    const containerWidth = tabContainer.scrollWidth;
+                    if (containerWidth > window.innerWidth) {
+                        tab.value.hasSwiper = true;
+                    }
+                }
+
+                onResize();
+
+                nextTick(() => {
+                    if (tab.value.hasSwiper) {
+                        const swiperEl = document.querySelector('.swiper.swiper-tab');
+                        if (swiperEl) {
+                            swiperTab.value = new Swiper('.swiper.swiper-tab', {
+                                spaceBetween: 32,
+                                slidesPerView: "auto",
+                                centeredSlides: true,
+                                slideToClickedSlide: true,
+                                freeMode: false,
+                            });
+                        }
+                    }
+
+                    const defaultTabEl = document.getElementById('defaultTab');
+                    let defaultTab = defaultTabEl ? parseInt(defaultTabEl.value) : 0;
+                    if (isNaN(defaultTab)) defaultTab = 0;
+                    if (defaultTab >= 0 && defaultTab <= (tab.value.total - 1)) {
+                        currentTab.value = defaultTab;
+                        if (swiperTab.value && typeof swiperTab.value.slideTo === 'function') {
+                            swiperTab.value.slideTo(defaultTab, 0);
+                        }
+                    }
+
+                    for (let i = 0; i < tab.value.total; i++) {
+                        swiperArr.value[i] = new Swiper(`.swiper.swiper-title-${i}`, {
+                            slidesPerView: 2,
+                            navigation: {
+                                prevEl: `.arrow-left-${i}`,
+                                nextEl: `.arrow-right-${i}`,
+                            },
+                            updateOnWindowResize: true,
+                            breakpoints: {
+                                220: {
+                                    spaceBetween: 17,
+                                    slidesPerView: 2,
+                                },
+                                768: {
+                                    spaceBetween: 20,
+                                    slidesPerView: 3,
+                                },
+                                1220: {
+                                    spaceBetween: 30,
+                                    slidesPerView: 5,
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            onBeforeMount(() => {
+                window.addEventListener('resize', onResize);
+                window.addEventListener('scroll', checkHitTop);
+                window.addEventListener('scroll', onResize);
+
+                checkDesc(currentTab.value);
+
+                if (typeof modelArr !== 'undefined') {
+                    modelArr.forEach((e) => {
+                        if (Object.values(e)[0][1] == "enableMagentoEC") {
+                            skuArr.value.push(encodeURIComponent(Object.values(e)[0][0]));
+                        }
+                    });
+
+                    uniqueSkuArr.value = [...new Set(skuArr.value)];
+
+                    if (uniqueSkuArr.value.length > 0) {
+                        getPrice(uniqueSkuArr.value).then((res) => {
+                            if (res) {
+                                res.forEach((item, i) => {
+                                    priceArr.value.push([Object.keys(item)[0], Object.values(item)[0].finalPrice.value, Object.values(item)[0].name]);
+                                });
+
+                                priceArr.value.forEach((price) => {
+                                    modelArr.forEach((model) => {
+                                        if (Object.values(model)[0][0] == price[0]) {
+                                            if (Object.values(model)[0][2] == -1 || (Object.values(model)[0][2] != -1 && Object.values(model)[0][2] > price[1])) {
+                                                Object.values(model)[0][2] = price[1];
+                                            }
+                                        }
+                                    });
+                                });
+
+                                sortedModelsArr.value = modelArr.reduce((accum, obj) => {
+                                    for (let key in obj) {
+                                        if (accum[key]) {
+                                            let tempArr = [...accum[key]];
+                                            accum[key] = [];
+                                            if (typeof (tempArr[0]) == 'string') {
+                                                accum[key].push(tempArr);
+                                            } else {
+                                                tempArr.forEach(item => {
+                                                    accum[key].push(item);
+                                                });
+                                            }
+                                            accum[key].push(obj[key]);
+                                        } else {
+                                            accum[key] = obj[key];
+                                        }
+                                    }
+                                    return accum;
+                                }, {});
+
+                                for (let i in sortedModelsArr.value) {
+                                    if (typeof (sortedModelsArr.value[i][0]) == 'string') {
+                                        if (sortedModelsArr.value[i][0] == '-1') {
+                                            modelPriceArr.value.push([i], '-1');
+                                        }
+                                        else {
+                                            modelPriceArr.value.push([i, sortedModelsArr.value[i][2]]);
+                                        }
+                                    } else {
+                                        let multiPrice = [];
+                                        sortedModelsArr.value[i].forEach(e => {
+                                            multiPrice.push(e[2]);
+                                        });
+                                        multiPrice = multiPrice.filter(function (value) {
+                                            return value > 0;
+                                        });
+                                        if (multiPrice.length > 0) {
+                                            let lowestPrice = Math.min(...multiPrice);
+                                            modelPriceArr.value.push([i, lowestPrice]);
+                                        }
+                                        else {
+                                            modelPriceArr.value.push([i, '-1']);
+                                        }
+                                    }
+                                }
+                            }
+                        }).then(() => {
+                            priceInitialized.value = true;
+                            nextTick(() => {
+                                const element = document.querySelector('#compare-anchor .compare-grid-content.active') ? document.querySelector('#compare-anchor .compare-grid-content.active') : document.querySelector('#compare-anchor .compare-grid-tab-container');
+                                gsap.timeline({
+                                    scrollTrigger: {
+                                        trigger: element,
+                                        start: 'top bottom',
+                                        once: true,
+                                        onEnter: () => {
+                                            productImpressionDatalayerTrigger();
+                                        }
+                                    }
+                                });
+                            });
+                        }).catch((err) => {
+                            console.log(err);
+                            priceInitialized.value = true;
+                        });
+                    } else {
+                        priceInitialized.value = true;
+                    }
+                } else {
+                    priceInitialized.value = true;
+                }
+            });
+
+            onBeforeUnmount(() => {
+                window.removeEventListener('resize', onResize);
+                window.removeEventListener('scroll', checkHitTop);
+                window.removeEventListener('scroll', onResize);
+            });
+
+            return {
+                currentTab,
+                currentColumnNum,
+                swiperTab,
+                swiperArr,
+                showArrow,
+                tabIndex,
+                itemIndex,
+                attributeIndex,
+                popUpShow,
+                showSticky,
+                sortedModelsArr,
+                skuArr,
+                uniqueSkuArr,
+                priceArr,
+                modelPriceArr,
+                hasDescription,
+                windowScrollTop,
+                windowHeight,
+                windowHeightGap,
+                currency,
+                priceInitialized,
+                tab,
+                separateValues,
+                numberThousandsCommas,
+                numberDecimalPoint,
+                formatPrice,
+                productClickDatalayerTrigger,
+                productImpressionDatalayerTrigger,
+                disableTouchMove,
+                enableTouchMove,
+                preventScroll,
+                safariHacks,
+                compareDatalayerTrigger,
+                switchTab,
+                checkDesc,
+                onResize,
+                openPopup,
+                closePopup,
+                disableScroll,
+                enableScroll,
+                checkHitTop,
+                checkBtnWidth
+            };
+        }
+    }).mount('#compare-anchor');
+});
+

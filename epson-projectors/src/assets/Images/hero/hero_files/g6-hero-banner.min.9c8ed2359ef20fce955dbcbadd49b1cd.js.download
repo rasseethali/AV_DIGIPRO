@@ -1,0 +1,48 @@
+function g6HeroAniFn(nodeName) {
+    let nodeClassList = document.getElementsByClassName(nodeName)[0].parentNode.parentNode.classList;
+    let heroNodeName = '';
+
+    nodeClassList.forEach((e) => {
+        if(/g6-hero-banner-component-/.test(e)) {
+            heroNodeName = e;            
+        }
+    });
+
+    let nodeClass = "." + heroNodeName;
+    let imgPC = nodeClass + " .hero-banner-wrap-block-img-pc";
+    let imgMobile = nodeClass + " .hero-banner-wrap-block-img-mobile";
+    
+    let heroBannerAni = gsap.timeline({
+        defaults: {
+            duration: .5,
+        },
+        scrollTrigger: {
+            trigger: nodeClass,
+            start: 'top center',
+        }
+    });
+    
+    function heroBannerAniPC(aniTimeline) {
+        let heroBannerAniPC = aniTimeline;
+        heroBannerAniPC.fromTo(imgPC, {autoAlpha: 0}, {autoAlpha: 1});
+    
+        return heroBannerAniPC;
+    }
+    
+    function heroBannerAniMobile(aniTimeline) {
+        let heroBannerAniMobile = aniTimeline;
+        heroBannerAniMobile.fromTo(imgMobile, {autoAlpha: 0}, {autoAlpha: 1});
+        
+        return heroBannerAniMobile;
+    }
+    
+    ScrollTrigger.matchMedia({
+        "(min-width: 1221px)": function() {
+            heroBannerAniPC(heroBannerAni);
+        },
+        "(max-width: 1220px)": function() {
+            heroBannerAniMobile(heroBannerAni);
+        },
+    });
+
+}
